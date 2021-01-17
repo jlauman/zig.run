@@ -35,10 +35,10 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    var env_it = env_map.iterator();
-    while (env_it.next()) |entry| {
-        try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
-    }
+    // var env_it = env_map.iterator();
+    // while (env_it.next()) |entry| {
+    //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
+    // }
 
     const buffer_size: usize = 16 * 1024;
     var buffer: [buffer_size]u8 = undefined;

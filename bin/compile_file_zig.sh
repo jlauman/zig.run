@@ -7,9 +7,11 @@ zig build-exe \
     -femit-bin=./web/bin/file.cgi \
     src/file.zig
 
+
 cd web
 echo '' | ./bin/file.cgi
 cd ..
+
 
 CONTAINER=$(sudo podman ps -q -f 'ancestor=localhost/zig.run')
 if [[ ! -z "$CONTAINER" ]]; then

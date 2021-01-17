@@ -10,7 +10,7 @@ const ResponseEntry = struct {
 };
 
 const Response = struct {
-    folders: []ResponseEntry,
+    examples: []ResponseEntry,
 };
 
 pub fn main() !void {
@@ -57,7 +57,7 @@ pub fn main() !void {
     const opt_req_uri = env_map.get("REQUEST_URI");
     try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
     if (opt_req_uri) |request_uri| {
-        const prefix = "/bin/file.cgi?example=";
+        const prefix = "/bin/file.cgi?file=";
         if (std.mem.startsWith(u8, request_uri, prefix)) {
             opt_example_name = request_uri[prefix.len..];
         }
@@ -99,20 +99,20 @@ pub fn main() !void {
         try stdout.print("\n", .{});
         try stdout.print("{}\n", .{string2.items});
     } else {
-        var folders = std.ArrayList(ResponseEntry).init(allocator);
-        defer folders.deinit();
+        var examples = std.ArrayList(ResponseEntry).init(allocator);
+        defer examples.deinit();
         const src_dir = try std.fs.cwd().openDir(src_path, .{ .iterate = true });
         var it = src_dir.iterate();
         while (try it.next()) |entry| {
             if (entry.kind == .Directory) {
                 try stderr.print("file.cgi: name={}\n", .{entry.name});
                 const tmp = ResponseEntry{ .name = "example 1", .file = entry.name };
-                try folders.append(tmp);
+                try examples.append(tmp);
             }
         }
 
-        const response = &Response{ .folders = folders.toOwnedSlice() };
-        defer allocator.free(response.folders);
+        const response = &Response{ .examples = examples.toOwnedSlice() };
+        defer allocator.free(response.examples);
         var string2 = std.ArrayList(u8).init(allocator);
         defer string2.deinit();
         try std.json.stringify(response, .{}, string2.writer());
@@ -145,12 +145,12 @@ fn resolveTmpPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
 
 fn resolveSrcPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
     const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../doc/src" });
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src" });
 }
 
 fn resolveExamplePath(allocator: *Allocator, exe_path: []const u8, example_name: []const u8) ![]const u8 {
     const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../doc/src", example_name });
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src", example_name });
 }
 
 fn readStdIn(buffer: []u8) !usize {
