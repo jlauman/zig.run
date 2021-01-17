@@ -1,0 +1,10 @@
+.cache/
+log/access.log
+log/error.log
+web/.ash_history
+web/.cache/
+web/bin/file.cgi
+web/bin/play.cgi
+web/tmp/
+zig-cache/
+

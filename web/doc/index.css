@@ -1,0 +1,104 @@
+#editor {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 24px 1fr 24px 1fr;
+  grid-template-rows: 24px 24px 1fr;
+  width: 100vw;
+  height: 100vh;
+}
+
+#header {
+  grid-column: 1 / 5;
+  grid-row: 1;
+}
+
+#tabs {
+  grid-column: 2 / 3;
+  grid-row: 2;
+}
+
+#docs {
+  grid-column: 4 / 5;
+  grid-row: 2;
+}
+
+#source_buttons {
+  grid-column: 1 / 2;
+  grid-row: 3;
+}
+
+#source_panel {
+  grid-column: 2 / 3;
+  grid-row: 3;
+}
+
+#output_panel {
+  grid-column: 4 / 5;
+  grid-row: 3;
+}
+
+.CodeMirror {
+  height: 100%;
+}
+
+:hover.svg-button {
+  stroke: #fbbf24;
+}
+
+.source-tab {
+  position: relative;
+  bottom: -4px;
+  margin-right: 0.5rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-width: 2px;
+  border-radius: 4px;
+  border-color: #f3f4f6;
+  background-color: #f3f4f6;
+}
+
+:hover.source-tab {
+  border-top-color: #fbbf24;
+}
+
+.source-tab-active {
+  border-top-color: black;
+  border-bottom-color: white;
+  background-color: white;
+}
+
+:hover.source-tab-active {
+  border-top-color: black;
+}
+
+.toc_item {
+  border-left-width: 4px;
+  border-left-color: #f3f4f6;
+}
+
+:hover.toc_item {
+  border-left-color: #fbbf24;
+}
+
+.doc-button {
+  text-align: center;
+  border-width: 2px;
+  border-color: #f3f4f6;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  width: 1.5rem;
+}
+
+:hover.doc-button {
+  color: #fbbf24;
+}
+
+.doc-button-active {
+  /* border-color: #fbbf24; */
+  border-color: black;
+}
+
+.source-highlight {
+  background-color: #fef3c7;
+}
