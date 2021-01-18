@@ -72,15 +72,16 @@
   border-top-color: black;
 }
 
-.example {
+.example_name {
   border-left-width: 4px;
   border-left-color: #f3f4f6;
 }
 
-:hover.example {
+:hover.example_name {
   border-left-color: #fbbf24;
 }
 
+/* 
 .doc-button {
   text-align: center;
   border-width: 2px;
@@ -95,10 +96,10 @@
 }
 
 .doc-button-active {
-  /* border-color: #fbbf24; */
   border-color: black;
 }
 
 .source-highlight {
   background-color: #fef3c7;
-}
+} 
+*/

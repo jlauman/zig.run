@@ -38,17 +38,23 @@
         />
       </div>
       <div
-        class="flex flex-col mt-2 ml-8 mr-8 border-2 border-gray-400 rounded-sm bg-white"
+        class="flex flex-row mt-2 ml-8 mr-8 border-2 border-gray-400 rounded-sm bg-white"
       >
-        <div class="flex flex-row m-2">
+        <div class="flex-1 flex-col m-2">
+          <div>Please select an example...</div>
+          <ul id="example_list" class="m-2"></ul>
+        </div>
+        <div class="flex flex-col m-2">
           <img
             id="zig-mark"
             class="w-40 m-2"
             src="/lib/zig-logo-413593a/zig-mark.svg"
           />
+        </div>
+        <div class="flex-1 flex-row m-2">
           <div class="m-2 mt-8">
-            Zig is a general-purpose programming language and toolchain for
-            maintaining robust, optimal, and reusable software.
+            Zig is a general-purpose programming language and toolchain<br />
+            for maintaining robust, optimal, and reusable software.<br />
             <br />
             <div class="m-2">
               <svg class="feather inline-block w-4 mr-2">
@@ -76,10 +82,6 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-row m-2">
-          Click the menu button (top left) to enter the playground.
-        </div>
-        <ul id="example_list" class="m-2"></ul>
       </div>
     </div>
     <!-- editor -->

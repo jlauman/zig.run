@@ -56,7 +56,13 @@ class Editor {
   }
 
   documentClickListener(event) {
-    const target = event.target;
+    let target = event.target;
+    // console.log("documentClickListener: target=", target);
+    // the click handler is on the document so the svg "use" element
+    // may be the target of a button click.
+    if (target.tagName.toLowerCase() === "use") {
+      target = target.parentElement;
+    }
 
     if (target.classList.contains("tab")) {
       const fileName = target.dataset.file_name;
