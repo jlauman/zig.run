@@ -45,7 +45,7 @@
   stroke: #fbbf24;
 }
 
-.source-tab {
+.tab {
   position: relative;
   bottom: -4px;
   margin-right: 0.5rem;
@@ -58,17 +58,17 @@
   background-color: #f3f4f6;
 }
 
-:hover.source-tab {
+:hover.tab {
   border-top-color: #fbbf24;
 }
 
-.source-tab-active {
+.tab-active {
   border-top-color: black;
   border-bottom-color: white;
   background-color: white;
 }
 
-:hover.source-tab-active {
+:hover.tab-active {
   border-top-color: black;
 }
 

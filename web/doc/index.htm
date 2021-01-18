@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="/index.css" />
     <script src="/lib/codemirror-5.58.3/codemirror.js" defer></script>
     <script src="/lib/codemirror-5.58.3/mode/javascript.js" defer></script>
-    <!-- <script src="/src/000_toc.js" defer></script> -->
     <script src="/index.js" defer></script>
   </head>
 
@@ -80,7 +79,7 @@
         <div class="flex flex-row m-2">
           Click the menu button (top left) to enter the playground.
         </div>
-        <ul id="toc_list" class="m-2"></ul>
+        <ul id="example_list" class="m-2"></ul>
       </div>
     </div>
     <!-- editor -->
@@ -90,21 +89,16 @@
           <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#menu" />
         </svg>
         <div class="flex flex-1 justify-center">
-          <div id="editor_name" class="text-lg">Example #1</div>
+          <div id="editor_name" class="text-lg"></div>
         </div>
         <!-- <svg class="feather">
           <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#moon" />
         </svg> -->
       </div>
 
-      <div id="tabs" class="relative flex flex-row">
-        <template id="tab">
-          <div class="source-tab"></div>
-        </template>
-      </div>
+      <div id="tabs" class="relative flex flex-row"></div>
 
-      <div id="docs" class="relative flex flex-row">
-      </div>
+      <div id="docs" class="relative flex flex-row"></div>
 
       <div id="source_buttons" class="">
         <svg
@@ -136,12 +130,6 @@
         id="source_panel"
         class="overflow-scroll border-l-2 border-r-2 border-b-2 border-gray-400"
       ></div>
-
-      <!-- <div id="doc_panel" class="flex flex-col">
-        <svg id="next_doc_button" class="feather svg-button mb-2">
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-down" />
-        </svg>
-      </div> -->
 
       <div
         id="output_panel"

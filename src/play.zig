@@ -7,7 +7,7 @@ const util = @import("util.zig");
 
 
 const RequestResponse = struct {
-    command: []const u8, filename: []const u8, source: []const u8, output: []const u8
+    command: []const u8, file_name: []const u8, source: []const u8, output: []const u8
 };
 
 
@@ -23,11 +23,11 @@ pub fn main() !void {
     defer allocator.free(exe_path);
     try stderr.print("play.cgi: exe_path={}\n", .{exe_path});
 
-    const home_path = try resolveHomePath(allocator, exe_path);
+    const home_path = try util.resolveHomePath(allocator, exe_path);
     defer allocator.free(home_path);
     try stderr.print("play.cgi: home_path={}\n", .{home_path});
 
-    const tmp_path = try resolveTmpPath(allocator, exe_path);
+    const tmp_path = try util.resolveTmpPath(allocator, exe_path);
     defer allocator.free(tmp_path);
     try stderr.print("play.cgi: tmp_path={}\n", .{tmp_path});
     std.fs.cwd().access(tmp_path, .{ .read = true }) catch |err| {
@@ -63,9 +63,9 @@ pub fn main() !void {
     var line_it = std.mem.split(request.source, "\n");
     while (line_it.next()) |line| {
         try stderr.print("{}\n", .{line});
-        if (std.mem.startsWith(u8, line, "//@filename=")) {
+        if (std.mem.startsWith(u8, line, "//@file_name=")) {
             if (file) |f| f.close();
-            const idx1 = 12;
+            const idx1 = 13;
             const file_name = line[idx1..];
             try stderr.print("play.cgi: file_name={}\n", .{file_name});
             const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, file_name });
@@ -83,7 +83,7 @@ pub fn main() !void {
         command = "run";
     } else if (mem.eql(u8, request.command, "test")) {
         command = "test";
-    } else if (mem.eql(u8, request.command, "fmt")) {
+    } else if (mem.eql(u8, request.command, "format")) {
         command = "fmt";
     } else {
         try stdout.print("Status: 400 Bad Request\n\n", .{});
@@ -96,7 +96,7 @@ pub fn main() !void {
     if (mem.eql(u8, command, "run")) {
         file_name = "main.zig";
     } else {
-        file_name = request.filename;
+        file_name = request.file_name;
     }
 
     const argv = [_][]const u8{ "/usr/local/zig/zig", command, file_name };
@@ -129,7 +129,7 @@ pub fn main() !void {
         source = "";
     }
 
-    const response = &RequestResponse{ .command = command, .filename = file_name, .source = source, .output = result.stderr };
+    const response = &RequestResponse{ .command = command, .file_name = file_name, .source = source, .output = result.stderr };
     var string2 = std.ArrayList(u8).init(allocator);
     defer string2.deinit();
 
@@ -140,24 +140,6 @@ pub fn main() !void {
     try stdout.print("Content-Length: {}\n", .{string2.items.len});
     try stdout.print("\n", .{});
     try stdout.print("{}\n", .{string2.items});
-}
-
-// fn resolveExePath(allocator: *Allocator) ![]const u8 {
-//     const args = try std.process.argsAlloc(allocator);
-//     defer process.argsFree(allocator, args);
-//     // std.debug.print("args[{}]={}\n", .{0, args[0]});
-//     const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
-//     return exe_path;
-// }
-
-fn resolveHomePath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, ".." });
-}
-
-fn resolveTmpPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../tmp" });
 }
 
 fn readStdIn(buffer: []u8) !usize {

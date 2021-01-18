@@ -10,6 +10,26 @@ pub fn resolveExePath(allocator: *Allocator) ![]const u8 {
     return exe_path;
 }
 
+pub fn resolveHomePath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
+    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, ".." });
+}
+
+pub fn resolveTmpPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
+    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../tmp" });
+}
+
+pub fn resolveSrcPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
+    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src" });
+}
+
+pub fn resolveExamplePath(allocator: *Allocator, exe_path: []const u8, example_name: []const u8) ![]const u8 {
+    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
+    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src", example_name });
+}
+
 pub fn readMainTitle(allocator: *Allocator, src_path: []const u8, example_name: []const u8) ![]const u8 {
     const main_zig_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name, "main.zig" });
     defer allocator.free(main_zig_path);

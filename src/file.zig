@@ -26,11 +26,11 @@ pub fn main() !void {
     defer allocator.free(exe_path);
     try stderr.print("file.cgi: exe_path={}\n", .{exe_path});
 
-    const home_path = try resolveHomePath(allocator, exe_path);
+    const home_path = try util.resolveHomePath(allocator, exe_path);
     defer allocator.free(home_path);
     try stderr.print("file.cgi: home_path={}\n", .{home_path});
 
-    const tmp_path = try resolveTmpPath(allocator, exe_path);
+    const tmp_path = try util.resolveTmpPath(allocator, exe_path);
     defer allocator.free(tmp_path);
     try stderr.print("file.cgi: tmp_path={}\n", .{tmp_path});
     std.fs.cwd().access(tmp_path, .{ .read = true }) catch |err| {
@@ -38,7 +38,7 @@ pub fn main() !void {
         return;
     };
 
-    const src_path = try resolveSrcPath(allocator, exe_path);
+    const src_path = try util.resolveSrcPath(allocator, exe_path);
     defer allocator.free(src_path);
     try stderr.print("file.cgi: src_path={}\n", .{src_path});
     std.fs.cwd().access(src_path, .{ .read = true }) catch |err| {
@@ -49,7 +49,7 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    var env_it = env_map.iterator();
+    // var env_it = env_map.iterator();
     // while (env_it.next()) |entry| {
     //     try stderr.print("file.cgi: key={}, value={}\n", .{ entry.key, entry.value });
     // }
@@ -58,7 +58,7 @@ pub fn main() !void {
     const opt_req_uri = env_map.get("REQUEST_URI");
     try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
     if (opt_req_uri) |request_uri| {
-        const prefix = "/bin/file.cgi?file=";
+        const prefix = "/bin/file.cgi?name=";
         if (std.mem.startsWith(u8, request_uri, prefix)) {
             var tmp = request_uri[prefix.len..];
             if (std.mem.indexOf(u8, tmp, "&") == null) {
@@ -72,7 +72,7 @@ pub fn main() !void {
     try stderr.print("file.cgi: example_name={}\n", .{opt_example_name});
 
     if (opt_example_name) |example_name| {
-        const example_path = try resolveExamplePath(allocator, exe_path, example_name);
+        const example_path = try util.resolveExamplePath(allocator, exe_path, example_name);
         defer allocator.free(example_path);
         try stderr.print("file.cgi: example_path={}\n", .{example_path});
         std.fs.cwd().access(example_path, .{ .read = true }) catch |err| {
@@ -138,38 +138,4 @@ pub fn main() !void {
         try stdout.print("\n", .{});
         try stdout.print("{}\n", .{string2.items});
     }
-}
-
-// fn resolveExePath(allocator: *Allocator) ![]const u8 {
-//     const args = try std.process.argsAlloc(allocator);
-//     defer process.argsFree(allocator, args);
-//     // std.debug.print("args[{}]={}\n", .{0, args[0]});
-//     const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
-//     return exe_path;
-// }
-
-fn resolveHomePath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, ".." });
-}
-
-fn resolveTmpPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../tmp" });
-}
-
-fn resolveSrcPath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src" });
-}
-
-fn resolveExamplePath(allocator: *Allocator, exe_path: []const u8, example_name: []const u8) ![]const u8 {
-    const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;
-    return try std.fs.path.resolve(allocator, &[_][]const u8{ path, "../src", example_name });
-}
-
-fn readStdIn(buffer: []u8) !usize {
-    const stdin = std.io.getStdIn().inStream();
-    const count = try stdin.readAll(buffer);
-    return count;
 }
