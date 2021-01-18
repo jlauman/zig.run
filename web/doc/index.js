@@ -1,5 +1,13 @@
 window.ZigRun = window.ZigRun || {};
 
+async function main() {
+  const editor = new Editor();
+  window.ZigRun.editor = editor;
+  editor.loadExamples();
+  // window.ZigMoe.editor.load('100');
+  console.log("ready!");
+}
+
 class Editor {
   constructor() {
     this._fileId = null;
@@ -7,83 +15,94 @@ class Editor {
     this._sourceMarks = [];
     this._sourceCodeMirror = this.constructSourceCodeMirror();
     this._outputCodeMirror = this.constructOutputCodeMirror();
-    // this.constructTableOfContents();
-    // this.addListeners();
+    document.addEventListener("click", this.documentClickListener.bind(this));
   }
 
   constructSourceCodeMirror() {
-    const sourceDiv = document.getElementById('source_panel');
+    const sourceDiv = document.getElementById("source_panel");
     return CodeMirror(sourceDiv, {
-      value: '',
-      mode: 'javascript',
+      value: "",
+      mode: "javascript",
       lineNumbers: true,
       autofocus: true,
       extraKeys: {
         Tab: function (cm) {
-          const spaces = Array(cm.getOption('indentUnit') + 3).join(' ');
-          cm.replaceSelection(spaces, 'end', '+input');
+          const spaces = Array(cm.getOption("indentUnit") + 3).join(" ");
+          cm.replaceSelection(spaces, "end", "+input");
         },
       },
     });
   }
 
   constructOutputCodeMirror() {
-    const outputDiv = document.getElementById('output_panel');
+    const outputDiv = document.getElementById("output_panel");
     return CodeMirror(outputDiv, {
-      value: '',
-      mode: 'text',
+      value: "",
+      mode: "text",
       lineNumbers: false,
       readOnly: true,
     });
   }
 
-  constructTableOfContents() {
-    const div = document.getElementById('toc_list');
-    for (const page of ZigRun.toc) {
-      console.log('constructTableOfContents: page=', page);
+  constructExamplesList() {
+    const div = document.getElementById("toc_list");
+    for (const example of this.examples) {
+      console.log("constructExamplesList: example=", example);
       div.insertAdjacentHTML(
-        'beforeend',
+        "beforeend",
         `
-        <li class="toc_item pl-2">${page.file}</li>
+        <li class="example pl-2" data-name="${example.name}">${example.title}</li>
         `
       );
     }
   }
 
+  documentClickListener(event) {
+    const target = event.target;
+    if (target.classList.contains("example")) {
+      const file = target.textContent;
+      console.log("click file=", file);
+      const elt = document.getElementById("welcome");
+      elt.classList.add("hidden");
+      const prefix = file.split("_")[0];
+      this.load(prefix);
+    }
+  }
+
   addListeners() {
     {
-      const wm_button = document.getElementById('welcome_menu_button');
-      wm_button.addEventListener('click', () => {
-        const elt = document.getElementById('welcome');
-        elt.classList.add('hidden');
+      const wm_button = document.getElementById("welcome_menu_button");
+      wm_button.addEventListener("click", () => {
+        const elt = document.getElementById("welcome");
+        elt.classList.add("hidden");
       });
 
-      const em_button = document.getElementById('editor_menu_button');
-      em_button.addEventListener('click', () => {
-        const elt = document.getElementById('welcome');
-        elt.classList.remove('hidden');
+      const em_button = document.getElementById("editor_menu_button");
+      em_button.addEventListener("click", () => {
+        const elt = document.getElementById("welcome");
+        elt.classList.remove("hidden");
       });
 
-      const divs = document.querySelectorAll('.toc_item');
-      divs.forEach((el) =>
-        el.addEventListener('click', (event) => {
-          const file = event.target.textContent;
-          console.log('click file=', file);
-          const elt = document.getElementById('welcome');
-          elt.classList.add('hidden');
-          const prefix = file.split('_')[0];
-          this.load(prefix);
-        })
-      );
+      // const divs = document.querySelectorAll(".toc_item");
+      // divs.forEach((el) =>
+      //   el.addEventListener("click", (event) => {
+      //     const file = event.target.textContent;
+      //     console.log("click file=", file);
+      //     const elt = document.getElementById("welcome");
+      //     elt.classList.add("hidden");
+      //     const prefix = file.split("_")[0];
+      //     this.load(prefix);
+      //   })
+      // );
 
-      const rm_button = document.getElementById('run_main_button');
-      rm_button.addEventListener('click', this.command.bind(this, 'run'));
+      const rm_button = document.getElementById("run_main_button");
+      rm_button.addEventListener("click", this.command.bind(this, "run"));
 
-      const tf_button = document.getElementById('test_file_button');
-      tf_button.addEventListener('click', this.command.bind(this, 'test'));
+      const tf_button = document.getElementById("test_file_button");
+      tf_button.addEventListener("click", this.command.bind(this, "test"));
 
-      const ff_button = document.getElementById('format_file_button');
-      ff_button.addEventListener('click', this.command.bind(this, 'fmt'));
+      const ff_button = document.getElementById("format_file_button");
+      ff_button.addEventListener("click", this.command.bind(this, "fmt"));
 
       // const next_doc_button = document.getElementById('next_doc_button');
       // next_doc_button.addEventListener('click', () => {
@@ -115,88 +134,90 @@ class Editor {
       //   }
       // });
 
-      document.addEventListener('click', (event) => {
-        console.log('document: click=', event.target);
+      document.addEventListener("click", (event) => {
+        console.log("document: click=", event.target);
 
-        if (event.target.id === 'next_doc_button') {
-          debugger;
-        } else if (event.target.id === 'prev_doc_button') {
-          debugger;
-        } else if (event.target.classList.contains('doc-button')) {
-          const button = event.target;
-          document
-            .querySelectorAll('.doc-button')
-            .forEach((b) => b.classList.remove('doc-button-active'));
-          button.classList.add('doc-button-active');
-          const fileLineNum = button.id.substring('doc_button_'.length);
-          const fileName = fileLineNum.split('_')[0];
-          const lineNum = parseInt(fileLineNum.split('_')[1]);
-          const file = this._sourceFiles.find((file) => file.name === fileName);
-          if (file) {
-            const text = file.docs.get(lineNum);
-            console.log(
-              `doc: fileName='${fileName}', lineNum=${lineNum}, text=`,
-              text
-            );
-            this.setSourceMark(lineNum - 1, text);
-          }
-        }
+        // if (event.target.id === "next_doc_button") {
+        //   debugger;
+        // } else if (event.target.id === "prev_doc_button") {
+        //   debugger;
+        // } else if (event.target.classList.contains("doc-button")) {
+        //   const button = event.target;
+        //   document
+        //     .querySelectorAll(".doc-button")
+        //     .forEach((b) => b.classList.remove("doc-button-active"));
+        //   button.classList.add("doc-button-active");
+        //   const fileLineNum = button.id.substring("doc_button_".length);
+        //   const fileName = fileLineNum.split("_")[0];
+        //   const lineNum = parseInt(fileLineNum.split("_")[1]);
+        //   const file = this._sourceFiles.find((file) => file.name === fileName);
+        //   if (file) {
+        //     const text = file.docs.get(lineNum);
+        //     console.log(
+        //       `doc: fileName='${fileName}', lineNum=${lineNum}, text=`,
+        //       text
+        //     );
+        //     this.setSourceMark(lineNum - 1, text);
+        //   }
+        // }
       });
     }
   }
 
-  async loadToc() {
-    let response = await fetch('/bin/file.cgi', {
-      headers: { 'Content-Type': 'application/json' },
+  async loadExamples() {
+    let response = await fetch("/bin/file.cgi", {
+      headers: { "Content-Type": "application/json" },
     });
-    let json = await response.json();
-    console.log(json);
+    const json = await response.json();
+    this.examples = json.examples;
+    console.log("loadExamples: examples=", this.examples);
+    this.constructExamplesList();
   }
 
   async load(prefix) {
-    console.log('Editor.load: prefix=', prefix);
+    console.log("Editor.load: prefix=", prefix);
     let page = ZigRun.toc.find((page) => page.file.startsWith(`${prefix}_`));
     // console.log(page);
     // clear tabs
     this._fileId = null;
     this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
-    const sourceTabs = document.querySelectorAll('.source-tab');
+    const sourceTabs = document.querySelectorAll(".source-tab");
     sourceTabs.forEach((el) => {
-      if (el.id !== 'tab') el.remove();
+      if (el.id !== "tab") el.remove();
     });
     // set example name
-    document.getElementById('introduction_name').textContent = page.name;
-    document.getElementById('editor_name').textContent = page.name;
+    document.getElementById("introduction_name").textContent = page.name;
+    document.getElementById("editor_name").textContent = page.name;
     //
     let response = await fetch(`/src/${page.file}`, {
-      headers: { 'Content-Type': 'text/plain' },
+      headers: { "Content-Type": "text/plain" },
     });
     let text = await response.text();
-    const parts = text.split('//@filename=').map((s) => s.trim());
+    const parts = text.split("//@filename=").map((s) => s.trim());
     for (let part of parts) {
       if (part.length == 0) continue;
-      let i = part.indexOf('\n');
+      let i = part.indexOf("\n");
       let name = part.substring(0, i);
-      let id = 'tab-' + name.replace('.', '-');
+      let id = "tab-" + name.replace(".", "-");
       let code = part.substring(i).trim();
       let docs = new Map();
       this._sourceFiles.push({ id, name, code, docs });
     }
     // ensure main.zig is first source file
     this._sourceFiles.sort((a, b) => {
-      if (a.name === 'main.zig') return -1;
-      if (b.name === 'main.zig') return 1;
+      if (a.name === "main.zig") return -1;
+      if (b.name === "main.zig") return 1;
       return a.name < b.name;
     });
     console.log(this._sourceFiles);
     this.loadSourceDocs();
     // build tabs
     for (let file of this._sourceFiles) {
-      let template = document.getElementById('tab');
+      let template = document.getElementById("tab");
       const div = template.content.firstElementChild.cloneNode(true);
       div.id = file.id;
       div.textContent = file.name;
-      div.addEventListener('click', () => this.setTab(file.id));
+      div.addEventListener("click", () => this.setTab(file.id));
       template.parentElement.appendChild(div);
     }
     // set active tab
@@ -206,7 +227,7 @@ class Editor {
   }
 
   loadSourceDocs() {
-    const docs = document.getElementById('docs');
+    const docs = document.getElementById("docs");
     // clear docs
     Array.from(docs.children).forEach((el) => el.remove());
     // const docButtons = document.querySelectorAll('.doc-button');
@@ -214,14 +235,14 @@ class Editor {
     //
     for (let file of this._sourceFiles) {
       this.readSourceDocs(file);
-      console.log('loadSourceDocs: docs=', file.docs);
+      console.log("loadSourceDocs: docs=", file.docs);
     }
     // build doc buttons
     let first = true;
     for (const file of this._sourceFiles) {
       if (!first) {
         docs.insertAdjacentHTML(
-          'beforeend',
+          "beforeend",
           `<span class="mr-2">&bull;</span>`
         );
       }
@@ -230,7 +251,7 @@ class Editor {
         const text = file.docs.get(lnum);
         console.log(`doc: id=${id}, text=${text}`);
         docs.insertAdjacentHTML(
-          'beforeend',
+          "beforeend",
           `<span id="${id}" class="doc-button">${lnum}</span>`
         );
         first = false;
@@ -239,7 +260,7 @@ class Editor {
     // build previous and next buttons
     if (!first) {
       docs.insertAdjacentHTML(
-        'afterbegin',
+        "afterbegin",
         `
         <svg id="next_doc_button" class="feather svg-button mr-2" alt="prev doc">
           <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-right" />
@@ -247,7 +268,7 @@ class Editor {
         `
       );
       docs.insertAdjacentHTML(
-        'afterbegin',
+        "afterbegin",
         `
         <svg id="prev_doc_button" class="feather svg-button mr-2" alt="prev doc">
           <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-left" />
@@ -258,14 +279,14 @@ class Editor {
   }
 
   readSourceDocs(file) {
-    console.log('readSourceDocs: file=', file);
+    console.log("readSourceDocs: file=", file);
     let code = [];
     let docs = new Map();
     let lineNum = 1;
-    for (let line of file.code.split('\n')) {
+    for (let line of file.code.split("\n")) {
       // console.log('line=', line);
-      if (line.startsWith('//!') || line.startsWith('///')) {
-        if (!docs.has(lineNum)) docs.set(lineNum, '');
+      if (line.startsWith("//!") || line.startsWith("///")) {
+        if (!docs.has(lineNum)) docs.set(lineNum, "");
         let doc = docs.get(lineNum);
         doc += `${line}\n`;
         docs.set(lineNum, doc);
@@ -274,7 +295,7 @@ class Editor {
         lineNum += 1;
       }
     }
-    file.code = code.join('\n');
+    file.code = code.join("\n");
     file.docs = docs;
   }
 
@@ -287,20 +308,20 @@ class Editor {
         );
         oldFile.code = this._sourceCodeMirror.getValue();
         const div = document.getElementById(this._fileId);
-        div.classList.remove('source-tab-active');
+        div.classList.remove("source-tab-active");
       }
       this._fileId = newFile.id;
       this._sourceCodeMirror.setValue(newFile.code);
       this._sourceCodeMirror.refresh();
       const div = document.getElementById(this._fileId);
-      div.classList.add('source-tab-active');
+      div.classList.add("source-tab-active");
     }
   }
 
   getSelectedFileName() {
     const file = this._sourceFiles.find((file) => file.id === this._fileId);
     if (file) return file.name;
-    throw new Error('no selected file');
+    throw new Error("no selected file");
   }
 
   setSelectedFileSource(source) {
@@ -310,7 +331,7 @@ class Editor {
       this._sourceCodeMirror.setValue(file.code);
       return;
     }
-    throw new Error('no selected file');
+    throw new Error("no selected file");
   }
 
   setSourceMark(line, text) {
@@ -320,14 +341,14 @@ class Editor {
       this._sourceCodeMirror.markText(
         { line: line, ch: 0 },
         { line: line, ch: 80 },
-        { className: 'source-highlight' }
+        { className: "source-highlight" }
       )
     );
     this._outputCodeMirror.setValue(text);
   }
 
   async command(command) {
-    this._outputCodeMirror.setValue('');
+    this._outputCodeMirror.setValue("");
     if (this._fileId != null) {
       const file = this._sourceFiles.find((file) => file.id === this._fileId);
       file.code = this._sourceCodeMirror.getValue();
@@ -337,20 +358,20 @@ class Editor {
       files.push(`//-- ${file.name} --//`);
       files.push(file.code);
     }
-    let response = await fetch('/bin/play.cgi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    let response = await fetch("/bin/play.cgi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         command: command,
-        filename: command === 'run' ? 'main.zig' : this.getSelectedFileName(),
-        source: files.join('\n'),
-        output: '',
+        filename: command === "run" ? "main.zig" : this.getSelectedFileName(),
+        source: files.join("\n"),
+        output: "",
       }),
     });
     if (response.status === 200) {
       let json = await response.json();
       console.log(json);
-      if (command === 'fmt') {
+      if (command === "fmt") {
         this.setSelectedFileSource(json.source);
       } else {
         // command === run || command === test
@@ -366,9 +387,4 @@ class Editor {
   }
 }
 
-const editor = new Editor();
-window.ZigRun.editor = editor;
-
-editor.loadToc();
-// window.ZigMoe.editor.load('100');
-console.log('ready!');
+main().catch((err) => console.error(err));

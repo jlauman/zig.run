@@ -3,10 +3,13 @@ const os = std.os;
 const mem = std.mem;
 const process = std.process;
 const Allocator = std.mem.Allocator;
+const util = @import("util.zig");
+
 
 const RequestResponse = struct {
     command: []const u8, filename: []const u8, source: []const u8, output: []const u8
 };
+
 
 pub fn main() !void {
     const stderr = std.io.getStdErr().writer();
@@ -16,7 +19,7 @@ pub fn main() !void {
     var allocator = &gpa.allocator;
     defer _ = gpa.deinit();
 
-    const exe_path = try resolveExePath(allocator);
+    const exe_path = try util.resolveExePath(allocator);
     defer allocator.free(exe_path);
     try stderr.print("play.cgi: exe_path={}\n", .{exe_path});
 
@@ -139,13 +142,13 @@ pub fn main() !void {
     try stdout.print("{}\n", .{string2.items});
 }
 
-fn resolveExePath(allocator: *Allocator) ![]const u8 {
-    const args = try std.process.argsAlloc(allocator);
-    defer process.argsFree(allocator, args);
-    // std.debug.print("args[{}]={}\n", .{0, args[0]});
-    const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
-    return exe_path;
-}
+// fn resolveExePath(allocator: *Allocator) ![]const u8 {
+//     const args = try std.process.argsAlloc(allocator);
+//     defer process.argsFree(allocator, args);
+//     // std.debug.print("args[{}]={}\n", .{0, args[0]});
+//     const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
+//     return exe_path;
+// }
 
 fn resolveHomePath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
     const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;

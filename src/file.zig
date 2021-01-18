@@ -3,10 +3,11 @@ const os = std.os;
 const mem = std.mem;
 const process = std.process;
 const Allocator = std.mem.Allocator;
+const util = @import("util.zig");
 
 const ResponseEntry = struct {
+    title: []const u8,
     name: []const u8,
-    file: []const u8,
 };
 
 const Response = struct {
@@ -21,7 +22,7 @@ pub fn main() !void {
     var allocator = &gpa.allocator;
     defer _ = gpa.deinit();
 
-    const exe_path = try resolveExePath(allocator);
+    const exe_path = try util.resolveExePath(allocator);
     defer allocator.free(exe_path);
     try stderr.print("file.cgi: exe_path={}\n", .{exe_path});
 
@@ -59,7 +60,13 @@ pub fn main() !void {
     if (opt_req_uri) |request_uri| {
         const prefix = "/bin/file.cgi?file=";
         if (std.mem.startsWith(u8, request_uri, prefix)) {
-            opt_example_name = request_uri[prefix.len..];
+            var tmp = request_uri[prefix.len..];
+            if (std.mem.indexOf(u8, tmp, "&") == null) {
+                opt_example_name = tmp;
+            } else {
+                try stdout.print("Status: 400 Bad Request\n\n", .{});
+                return;
+            }
         }
     }
     try stderr.print("file.cgi: example_name={}\n", .{opt_example_name});
@@ -105,8 +112,11 @@ pub fn main() !void {
         var it = src_dir.iterate();
         while (try it.next()) |entry| {
             if (entry.kind == .Directory) {
-                try stderr.print("file.cgi: name={}\n", .{entry.name});
-                const tmp = ResponseEntry{ .name = "example 1", .file = entry.name };
+                const title = try util.readMainTitle(allocator, src_path, entry.name);
+                // free after json is serialized!!!
+                // try stderr.print("file.cgi: name={}\n", .{entry.name});
+                // try stderr.print("file.cgi: title={}\n", .{title});
+                const tmp = ResponseEntry{ .title = title, .name = entry.name };
                 try examples.append(tmp);
             }
         }
@@ -117,6 +127,11 @@ pub fn main() !void {
         defer string2.deinit();
         try std.json.stringify(response, .{}, string2.writer());
 
+        // must free title strings allocated in while loop
+        for (response.examples) |example| {
+            allocator.free(example.title);
+        }
+
         // write http response
         try stdout.print("Content-Type: application/json\n", .{});
         try stdout.print("Content-Length: {}\n", .{string2.items.len});
@@ -125,13 +140,13 @@ pub fn main() !void {
     }
 }
 
-fn resolveExePath(allocator: *Allocator) ![]const u8 {
-    const args = try std.process.argsAlloc(allocator);
-    defer process.argsFree(allocator, args);
-    // std.debug.print("args[{}]={}\n", .{0, args[0]});
-    const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
-    return exe_path;
-}
+// fn resolveExePath(allocator: *Allocator) ![]const u8 {
+//     const args = try std.process.argsAlloc(allocator);
+//     defer process.argsFree(allocator, args);
+//     // std.debug.print("args[{}]={}\n", .{0, args[0]});
+//     const exe_path = try std.fs.path.resolve(allocator, &[_][]const u8{args[0]});
+//     return exe_path;
+// }
 
 fn resolveHomePath(allocator: *Allocator, exe_path: []const u8) ![]const u8 {
     const path = std.fs.path.dirname(exe_path) orelse return error.FileNotFound;

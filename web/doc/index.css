@@ -72,12 +72,12 @@
   border-top-color: black;
 }
 
-.toc_item {
+.example {
   border-left-width: 4px;
   border-left-color: #f3f4f6;
 }
 
-:hover.toc_item {
+:hover.example {
   border-left-color: #fbbf24;
 }
 

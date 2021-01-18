@@ -16,24 +16,14 @@ RUN apk update --no-cache &&\
 
 ENV PATH="/usr/local/zig:$PATH"
 
-# RUN echo 'export PATH="/usr/local/zig:$PATH"' > /etc/profile.d/zig.sh &&\
-#     adduser -D -h /home/web -s /bin/sh web
-    # chown -R web.wheel /var/log/lighttpd
-
-# RUN echo 'export PATH="/usr/local/zig:$PATH"' > /etc/profile.d/zig.sh &&\
-#     adduser -D -u 1000 -h /home/web -s /bin/sh web &&\
-#     chown -R web.wheel /var/log/lighttpd
-
-# COPY --from=zig --chown=0:0 /usr/local/zig /usr/local/zig
 COPY --chown=web:web ./web/bin /home/web/bin
 COPY --chown=web:web ./web/doc /home/web/doc
 COPY --chown=root:root ./app /app
-RUN chmod 440 /app/init.sh /app/*.conf
-# RUN chmod 440 /app/init.sh /app/*.conf &&\
-#     chown -R 0:0 /home/web/bin /home/web/doc
 
+RUN chmod 440 /app/init.sh /app/*.conf
+
+WORKDIR /home/web
 # USER web
-# WORKDIR /home/web
 # CMD [ "sh" ]
 
 CMD [ "/bin/sh", "/app/init.sh" ]

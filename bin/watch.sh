@@ -16,6 +16,12 @@ inotifywait -m ./src -e modify |
             printf "\n\n-------- file=${file} --------\n"
             if [[ "file.zig" == "$file" ]]; then bin/compile_file_zig.sh; fi
             if [[ "play.zig" == "$file" ]]; then bin/compile_play_zig.sh; fi
+            if [[ "util.zig" == "$file" ]]; then 
+                printf "\n\n-------- file=file.zig --------\n"
+                bin/compile_file_zig.sh
+                printf "\n\n-------- file=play.zig --------\n"
+                bin/compile_play_zig.sh
+            fi
             LAST_TIMESTAMP=${TIMESTAMP}
         fi
     done
