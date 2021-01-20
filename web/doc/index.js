@@ -20,12 +20,14 @@ class Editor {
     const sourceDiv = document.getElementById("source_panel");
     return CodeMirror(sourceDiv, {
       value: "",
-      mode: "javascript",
+      mode: "zig",
+      // theme: "darcula",
       lineNumbers: true,
       autofocus: true,
+      indentUnit: 4,
       extraKeys: {
         Tab: function (cm) {
-          const spaces = Array(cm.getOption("indentUnit") + 3).join(" ");
+          const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
           cm.replaceSelection(spaces, "end", "+input");
         },
       },
