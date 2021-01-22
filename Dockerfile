@@ -22,7 +22,9 @@ COPY --chown=web:web ./web/doc /home/web/doc
 COPY --chown=web:web ./web/src /home/web/src
 COPY --chown=root:root ./app /app
 
-RUN chmod 440 /app/init.sh /app/*.conf &&\
+RUN chmod 440 /app/*.conf &&\
+    chmod 755 /app/init.sh &&\
+    chown web /var/log/lighttpd &&\
     chmod g-s /home/web &&\
     chmod -R o-rwx /home/web/bin /home/web/tmp &&\
     chmod -R go-rwx /home/web/doc /home/web/src &&\

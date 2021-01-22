@@ -12,4 +12,3 @@ sudo podman run \
 
 
     # --mount type=volume,source=web_tmp,target=/home/web/tmp \
-
