@@ -153,9 +153,11 @@ CodeMirror.defineMode("zig", function(config) {
     this.align = align;
     this.prev = prev;
   }
+
   function pushContext(state, col, type) {
     return state.context = new Context(state.indented, col, type, null, state.context);
   }
+
   function popContext(state) {
     if (!state.context.prev) return;
     var t = state.context.type;
@@ -213,10 +215,10 @@ CodeMirror.defineMode("zig", function(config) {
     },
 
     electricChars: "{}):",
-    closeBrackets: "()[]{}''\"\"``",
+    closeBrackets: "()[]{}''\"\"",
     fold: "brace",
-    blockCommentStart: "/*",
-    blockCommentEnd: "*/",
+    // blockCommentStart: "/*",
+    // blockCommentEnd: "*/",
     lineComment: "//"
   };
 });

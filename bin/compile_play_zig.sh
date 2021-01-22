@@ -16,4 +16,6 @@ cd ..
 CONTAINER=$(sudo podman ps -q -f 'ancestor=localhost/zig.run')
 if [[ ! -z "$CONTAINER" ]]; then
     sudo podman cp ./web/bin/play.cgi ${CONTAINER}:/home/web/bin/play.cgi
+    sudo podman exec -u root ${CONTAINER} chown zig.zig /home/web/bin/play.cgi
+    sudo podman exec -u root ${CONTAINER} chmod ug+s /home/web/bin/play.cgi
 fi

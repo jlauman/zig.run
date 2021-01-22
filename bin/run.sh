@@ -9,3 +9,7 @@ sudo podman run \
     --publish "0.0.0.0:8080:80/tcp" \
     --rm -it \
     zig.run:latest
+
+
+    # --mount type=volume,source=web_tmp,target=/home/web/tmp \
+

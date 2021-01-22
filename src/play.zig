@@ -62,14 +62,15 @@ pub fn main() !void {
     var file: ?std.fs.File = null;
     var line_it = std.mem.split(request.source, "\n");
     while (line_it.next()) |line| {
-        try stderr.print("{}\n", .{line});
+        // try stderr.print("{}\n", .{line});
         if (std.mem.startsWith(u8, line, "//@file_name=")) {
             if (file) |f| f.close();
             const idx1 = 13;
             const file_name = line[idx1..];
-            try stderr.print("play.cgi: file_name={}\n", .{file_name});
+            // try stderr.print("play.cgi: file_name={}\n", .{file_name});
             const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, file_name });
             defer allocator.free(file_path);
+            try stderr.print("play.cgi: file_path={}\n", .{file_path});
             file = try std.fs.cwd().createFile(file_path, .{});
         } else if (file) |f| {
             _ = try f.write(line);
