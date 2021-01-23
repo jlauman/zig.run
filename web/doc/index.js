@@ -11,8 +11,45 @@ async function main() {
 
   const editor = new Editor();
   window.ZigRun.editor = editor;
-  editor.loadExamples();
+  await editor.loadExamples();
+
+  const handler = function () {
+    const exampleName = getDocumentFragment();
+    if (exampleName) {
+      editor.loadExample(exampleName);
+      editor.closeDropDowns();
+    } else {
+      editor.openDropDowns();
+    }
+  };
+
+  const exampleName = getDocumentFragment();
+  if (exampleName) handler();
+
+  window.addEventListener('hashchange', handler, false);
 }
+
+function getDocumentFragment() {
+  let hash = document.location.hash;
+  if (hash.startsWith('#')) hash = hash.substring(1);
+  if (hash.length == 0) return null;
+  return hash;
+}
+
+// function parseQuery(string) {
+//   const query = new Map();
+//   const pairs = (string[0] === '?' ? string.substr(1) : string).split('&');
+//   for (const tmp of pairs) {
+//     const pair = tmp.split('=');
+//     query.set(decodeURIComponent(pair[0]), decodeURIComponent(pair[1] || ''));
+//   }
+//   return query;
+// }
+
+// function getQueryParam(string, name) {
+//   let query = parseQuery(string);
+//   return query.get(name);
+// }
 
 class Editor {
   constructor() {
@@ -104,6 +141,28 @@ class Editor {
     }
   }
 
+  closeDropDowns() {
+    const elts = [
+      document.getElementById('examples'),
+      document.getElementById('welcome'),
+    ];
+    for (const elt of elts) {
+      elt.classList.remove('translate-y-0');
+      elt.classList.add('-translate-y-full');
+    }
+  }
+
+  openDropDowns() {
+    const elts = [
+      document.getElementById('examples'),
+      document.getElementById('welcome'),
+    ];
+    for (const elt of elts) {
+      elt.classList.remove('-translate-y-full');
+      elt.classList.add('translate-y-0');
+    }
+  }
+
   documentClickListener(event) {
     let target = event.target;
     // console.log("documentClickListener: target=", target);
@@ -135,49 +194,26 @@ class Editor {
     }
 
     if (target.id === 'examples_menu_button') {
-      const elts = [
-        document.getElementById('examples'),
-        document.getElementById('welcome'),
-      ];
-      for (const elt of elts) {
-        elt.classList.remove('translate-y-0');
-        elt.classList.add('-translate-y-full');
-      }
+      this.closeDropDowns();
       return;
     }
 
     if (target.id === 'editor_menu_button') {
       const elt = document.getElementById('examples');
-      // elt.classList.remove("hidden");
       elt.classList.add('translate-y-0');
       elt.classList.remove('-translate-y-full');
       return;
     }
 
     if (target.id === 'welcome_button') {
-      const elts = [
-        document.getElementById('examples'),
-        document.getElementById('welcome'),
-      ];
-      for (const elt of elts) {
-        elt.classList.remove('-translate-y-full');
-        elt.classList.add('translate-y-0');
-      }
+      this.openDropDowns();
       return;
     }
 
     if (target.classList.contains('example_name')) {
-      const name = target.dataset.example_name;
-      // console.log("click: example_name=", name);
-      const elts = [
-        document.getElementById('examples'),
-        document.getElementById('welcome'),
-      ];
-      this.loadExample(name);
-      for (const elt of elts) {
-        elt.classList.remove('translate-y-0');
-        elt.classList.add('-translate-y-full');
-      }
+      const exampleName = target.dataset.example_name;
+      // console.log("click: example_name=", exampleName);
+      document.location = `#${exampleName}`;
       return;
     }
   }
@@ -196,6 +232,12 @@ class Editor {
     console.log('Editor.loadExample: name=', name);
     let example = this.examples.find((e) => e.name == name);
     console.log('loadExample: example=', example);
+    if (!example) {
+      document.getElementById(
+        'editor_name'
+      ).textContent = `NO EXAMPLE WITH NAME ${name}`;
+      return;
+    }
     this._fileName = null;
     this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
     // request file archive from server

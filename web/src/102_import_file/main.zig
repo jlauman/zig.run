@@ -1,6 +1,8 @@
-//! Use std.debug.print
+//! @import
+//!
 //! This example show the use of the standard library import.
 //! Note how "@import" may occur anywhere.
+//!
 const std = @import("std");
 const print = std.debug.print;
 /// importing another file...
