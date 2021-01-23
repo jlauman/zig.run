@@ -1,0 +1,37 @@
+{
+  "name": "zig.run",
+  "version": "1.0.0",
+  "description": "Run and play with Zig source code.",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlauman/zig.run.git"
+  },
+  "keywords": [
+    "zig",
+    "code",
+    "playground"
+  ],
+  "author": "Jason Lauman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jlauman/zig.run/issues"
+  },
+  "homepage": "https://github.com/jlauman/zig.run#readme",
+  "dependencies": {
+    "autoprefixer": "^10.1.0",
+    "postcss": "^8.2.1",
+    "tailwindcss": "^2.0.2",
+    "tailwindcss-cli": "^0.1.2"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true
+  }
+}

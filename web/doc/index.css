@@ -1,3 +1,4 @@
+
 #editor {
   display: grid;
   gap: 4px;
@@ -80,26 +81,3 @@
 :hover.example_name {
   border-left-color: #fbbf24;
 }
-
-/* 
-.doc-button {
-  text-align: center;
-  border-width: 2px;
-  border-color: #f3f4f6;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  width: 1.5rem;
-}
-
-:hover.doc-button {
-  color: #fbbf24;
-}
-
-.doc-button-active {
-  border-color: black;
-}
-
-.source-highlight {
-  background-color: #fef3c7;
-} 
-*/

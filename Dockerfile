@@ -11,9 +11,10 @@ RUN apk update --no-cache &&\
 
 RUN apk update --no-cache &&\
     apk add iproute2 lighttpd &&\
-    adduser zig -D -H &&\
     adduser -D -h /home/web -s /bin/sh web &&\
-    mkdir /home/web/tmp; chown -R web.web /home/web
+    mkdir /home/web/tmp &&\
+    chown -R web.web /home/web &&\
+    adduser zig -D -H
 
 ENV PATH="/usr/local/zig:$PATH"
 

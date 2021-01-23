@@ -13,43 +13,43 @@ class Editor {
     this._sourceMarks = [];
     this._sourceCodeMirror = this.constructSourceCodeMirror();
     this._outputCodeMirror = this.constructOutputCodeMirror();
-    document.addEventListener("click", this.documentClickListener.bind(this));
+    document.addEventListener('click', this.documentClickListener.bind(this));
   }
 
   constructSourceCodeMirror() {
-    const sourceDiv = document.getElementById("source_panel");
+    const sourceDiv = document.getElementById('source_panel');
     return CodeMirror(sourceDiv, {
-      value: "",
-      mode: "zig",
+      value: '',
+      mode: 'zig',
       // theme: "darcula",
       lineNumbers: true,
       autofocus: true,
       indentUnit: 4,
       extraKeys: {
         Tab: function (cm) {
-          const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-          cm.replaceSelection(spaces, "end", "+input");
+          const spaces = Array(cm.getOption('indentUnit') + 1).join(' ');
+          cm.replaceSelection(spaces, 'end', '+input');
         },
       },
     });
   }
 
   constructOutputCodeMirror() {
-    const outputDiv = document.getElementById("output_panel");
+    const outputDiv = document.getElementById('output_panel');
     return CodeMirror(outputDiv, {
-      value: "",
-      mode: "text",
+      value: '',
+      mode: 'text',
       lineNumbers: false,
       readOnly: true,
     });
   }
 
   constructExamplesList() {
-    const div = document.getElementById("example_list");
+    const div = document.getElementById('example_list');
     for (const example of this.examples) {
       // console.log("constructExamplesList: example=", example);
       div.insertAdjacentHTML(
-        "beforeend",
+        'beforeend',
         `
         <li class="example_name pl-2" data-example_name="${example.name}">${example.title}</li>
         `
@@ -62,56 +62,82 @@ class Editor {
     // console.log("documentClickListener: target=", target);
     // the click handler is on the document so the svg "use" element
     // may be the target of a button click.
-    if (target.tagName.toLowerCase() === "use") {
+    if (target.tagName.toLowerCase() === 'use') {
       target = target.parentElement;
     }
 
-    if (target.classList.contains("tab")) {
+    if (target.classList.contains('tab')) {
       const fileName = target.dataset.file_name;
       this.setTab(fileName);
       return;
     }
 
-    if (target.id == "run_main_button") {
-      this.command("run");
+    if (target.id == 'run_main_button') {
+      this.command('run');
       return;
     }
 
-    if (target.id === "test_file_button") {
-      this.command("test");
+    if (target.id === 'test_file_button') {
+      this.command('test');
       return;
     }
 
-    if (target.id === "format_file_button") {
-      this.command("format");
+    if (target.id === 'format_file_button') {
+      this.command('format');
       return;
     }
 
-    if (target.id === "welcome_menu_button") {
-      const elt = document.getElementById("welcome");
-      elt.classList.add("hidden");
+    if (target.id === 'examples_menu_button') {
+      const elts = [
+        document.getElementById('examples'),
+        document.getElementById('welcome'),
+      ];
+      for (const elt of elts) {
+        elt.classList.remove('translate-y-0');
+        elt.classList.add('-translate-y-full');
+      }
       return;
     }
 
-    if (target.id === "editor_menu_button") {
-      const elt = document.getElementById("welcome");
-      elt.classList.remove("hidden");
+    if (target.id === 'editor_menu_button') {
+      const elt = document.getElementById('examples');
+      // elt.classList.remove("hidden");
+      elt.classList.add('translate-y-0');
+      elt.classList.remove('-translate-y-full');
       return;
     }
 
-    if (target.classList.contains("example_name")) {
+    if (target.id === 'welcome_button') {
+      const elts = [
+        document.getElementById('examples'),
+        document.getElementById('welcome'),
+      ];
+      for (const elt of elts) {
+        elt.classList.remove('-translate-y-full');
+        elt.classList.add('translate-y-0');
+      }
+      return;
+    }
+
+    if (target.classList.contains('example_name')) {
       const name = target.dataset.example_name;
       // console.log("click: example_name=", name);
-      const elt = document.getElementById("welcome");
-      elt.classList.add("hidden");
+      const elts = [
+        document.getElementById('examples'),
+        document.getElementById('welcome'),
+      ];
       this.loadExample(name);
+      for (const elt of elts) {
+        elt.classList.remove('translate-y-0');
+        elt.classList.add('-translate-y-full');
+      }
       return;
     }
   }
 
   async loadExamples() {
-    let response = await fetch("/bin/file.cgi", {
-      headers: { "Content-Type": "application/json" },
+    let response = await fetch('/bin/file.cgi', {
+      headers: { 'Content-Type': 'application/json' },
     });
     const json = await response.json();
     this.examples = json.examples;
@@ -120,35 +146,34 @@ class Editor {
   }
 
   async loadExample(name) {
-    console.log("Editor.loadExample: name=", name);
+    console.log('Editor.loadExample: name=', name);
     let example = this.examples.find((e) => e.name == name);
-    console.log("loadExample: example=", example);
+    console.log('loadExample: example=', example);
     this._fileName = null;
     this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
     // request file archive from server
     let response = await fetch(`/bin/file.cgi?name=${example.name}`, {
-      headers: { "Content-Type": "text/plain" },
+      headers: { 'Content-Type': 'text/plain' },
     });
     let text = await response.text();
-    const parts = text.split("//@file_name=").map((s) => s.trim());
+    const parts = text.split('//@file_name=').map((s) => s.trim());
     for (let part of parts) {
       if (part.length == 0) continue;
-      let i = part.indexOf("\n");
+      let i = part.indexOf('\n');
       let name = part.substring(0, i);
       let code = part.substring(i).trim();
-      let docs = "";
+      let docs = '';
       this._sourceFiles.push({ name, code, docs });
     }
     // ensure main.zig is first source file
     this._sourceFiles.sort((a, b) => {
-      if (a.name === "main.zig") return -1;
-      if (b.name === "main.zig") return 1;
+      if (a.name === 'main.zig') return -1;
+      if (b.name === 'main.zig') return 1;
       return a.name < b.name;
     });
     // console.log(this._sourceFiles);
     // set example title
-    document.getElementById("introduction_name").textContent = example.title;
-    document.getElementById("editor_name").textContent = example.title;
+    document.getElementById('editor_name').textContent = example.title;
     this.loadExampleSourceDocs();
     this.loadExampleTabs();
   }
@@ -158,27 +183,27 @@ class Editor {
       // console.log("loadExampleSourceDocs: file=", file);
       let code = [];
       let docs = [];
-      for (let line of file.code.split("\n")) {
+      for (let line of file.code.split('\n')) {
         // console.log('line=', line);
-        if (line.startsWith("//!")) {
+        if (line.startsWith('//!')) {
           docs.push(line.substring(3).trim());
         } else {
           code.push(line);
         }
       }
-      file.code = code.join("\n");
-      file.docs = docs.join("\n");
+      file.code = code.join('\n');
+      file.docs = docs.join('\n');
     }
   }
 
   loadExampleTabs() {
     // clear tabs
-    document.querySelectorAll(".tab").forEach((el) => el.remove());
+    document.querySelectorAll('.tab').forEach((el) => el.remove());
     // build tabs
-    const tabs = document.getElementById("tabs");
+    const tabs = document.getElementById('tabs');
     for (let file of this._sourceFiles) {
       tabs.insertAdjacentHTML(
-        "beforeend",
+        'beforeend',
         `
         <div id="${file.name}" class="tab" data-file_name="${file.name}">${file.name}</div>
         `
@@ -199,36 +224,36 @@ class Editor {
         );
         oldFile.code = this._sourceCodeMirror.getValue();
         const div = document.getElementById(this._fileName);
-        div.classList.remove("tab-active");
+        div.classList.remove('tab-active');
       }
       this._fileName = newFile.name;
       this._sourceCodeMirror.setValue(newFile.code);
       this._sourceCodeMirror.refresh();
-      if (newFile.docs !== "") {
+      if (newFile.docs !== '') {
         this._outputCodeMirror.setValue(newFile.docs);
         this._outputCodeMirror.refresh();
       }
       const div = document.getElementById(this._fileName);
-      div.classList.add("tab-active");
+      div.classList.add('tab-active');
     }
   }
 
   getSelectedFileName() {
     const file = this._sourceFiles.find((file) => file.name === this._fileName);
     if (file) return file.name;
-    throw new Error("no selected file");
+    throw new Error('no selected file');
   }
 
   setSelectedFileSource(source) {
     const file = this._sourceFiles.find((file) => file.name === this._fileName);
-    if (!file) throw new Error("no file is selected");
+    if (!file) throw new Error('no file is selected');
     file.code = source;
     this._sourceCodeMirror.setValue(file.code);
     // this._sourceCodeMirror.refresh();
   }
 
   async command(command) {
-    this._outputCodeMirror.setValue("");
+    this._outputCodeMirror.setValue('');
     if (this._fileName != null) {
       const file = this._sourceFiles.find(
         (file) => file.name === this._fileName
@@ -240,20 +265,20 @@ class Editor {
       files.push(`//@file_name=${file.name}`);
       files.push(file.code);
     }
-    let response = await fetch("/bin/play.cgi", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    let response = await fetch('/bin/play.cgi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         command: command,
-        file_name: command === "run" ? "main.zig" : this.getSelectedFileName(),
-        source: files.join("\n"),
-        output: "",
+        file_name: command === 'run' ? 'main.zig' : this.getSelectedFileName(),
+        source: files.join('\n'),
+        output: '',
       }),
     });
     if (response.status === 200) {
       let json = await response.json();
       // console.log(json);
-      if (command === "format") {
+      if (command === 'format') {
         this.setSelectedFileSource(json.source);
       } else {
         // command === run || command === test
