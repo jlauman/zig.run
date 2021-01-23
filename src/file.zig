@@ -106,22 +106,24 @@ pub fn main() !void {
         try stdout.print("\n", .{});
         try stdout.print("{}\n", .{string2.items});
     } else {
-        var examples = std.ArrayList(ResponseEntry).init(allocator);
-        defer examples.deinit();
+        var exampleList = std.ArrayList(ResponseEntry).init(allocator);
+        defer exampleList.deinit();
         const src_dir = try std.fs.cwd().openDir(src_path, .{ .iterate = true });
         var it = src_dir.iterate();
         while (try it.next()) |entry| {
             if (entry.kind == .Directory) {
                 const title = try util.readMainTitle(allocator, src_path, entry.name);
                 // free after json is serialized!!!
-                // try stderr.print("file.cgi: name={}\n", .{entry.name});
-                // try stderr.print("file.cgi: title={}\n", .{title});
+                try stderr.print("file.cgi: name={}\n", .{entry.name});
+                try stderr.print("file.cgi: title={}\n", .{title});
                 const tmp = ResponseEntry{ .title = title, .name = entry.name };
-                try examples.append(tmp);
+                try exampleList.append(tmp);
             }
         }
 
-        const response = &Response{ .examples = examples.toOwnedSlice() };
+        const examples = exampleList.toOwnedSlice();
+        std.sort.sort(ResponseEntry, examples, {}, ascendingName);
+        const response = &Response{ .examples = examples };
         defer allocator.free(response.examples);
         var string2 = std.ArrayList(u8).init(allocator);
         defer string2.deinit();
@@ -138,4 +140,8 @@ pub fn main() !void {
         try stdout.print("\n", .{});
         try stdout.print("{}\n", .{string2.items});
     }
+}
+
+fn ascendingName(context: void, a: ResponseEntry, b: ResponseEntry) bool {
+    return std.mem.lessThan(u8, a.name, b.name);
 }
