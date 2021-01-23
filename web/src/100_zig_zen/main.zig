@@ -17,5 +17,5 @@
 const std = @import("std");
 
 pub fn main() !void {
-    std.debug.print("{}\n", .{"hello, world!"});
+    std.debug.print("hello, world!\n", .{});
 }

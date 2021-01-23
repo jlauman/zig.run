@@ -4,6 +4,8 @@
 //! style debugging. For printing to stdout and/or stderr 
 //! see the std.io.getStdOut().writer() example.
 //!
+//! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/debug.zig#L61-L68 
+//!
 const std = @import("std");
 const print = std.debug.print;
 

@@ -43,13 +43,52 @@ class Editor {
   }
 
   constructOutputCodeMirror() {
-    const outputDiv = document.getElementById('output_panel');
-    return CodeMirror(outputDiv, {
-      value: '',
-      mode: 'text',
-      lineNumbers: false,
-      readOnly: true,
+    CodeMirror.defineMode('textlink', function (config, parserConfig) {
+      var mustacheOverlay = {
+        token: function (stream) {
+          let state = 0;
+          let ch = stream.next();
+          while (ch != null) {
+            if (state == 0 && ch === 'h') state = 1;
+            else if (state == 1 && ch == 't') state = 2;
+            else if (state == 2 && ch == 't') state = 3;
+            else if (state == 3 && ch == 'p') state = 4;
+            else if (state == 4 && ch == 's') state = 5;
+            else if (state == 4 && ch == ':') state = 7;
+            else if (state == 5 && ch == ':') state = 6;
+            else if (state == 6 && ch == '/') state = 7;
+            else if (state == 7 && ch == '/') state = 8;
+            else if (state == 8 && (ch == ' ' || ch == '\n')) return 'link';
+            else if (state == 8 && stream.eol()) return 'link';
+            else if (state == 8) state = state;
+            else return null;
+            ch = stream.next();
+          }
+          return null;
+        },
+      };
+      return CodeMirror.overlayMode(
+        CodeMirror.getMode(config, parserConfig.backdrop || 'text'),
+        mustacheOverlay
+      );
     });
+
+    const outputDiv = document.getElementById('output_panel');
+    const cm = CodeMirror(outputDiv, {
+      value: '',
+      mode: 'textlink',
+      lineNumbers: false,
+      readOnly: false,
+    });
+    cm.on('mousedown', function (instance, event) {
+      const target = event.target;
+      if (target.classList.contains('cm-link')) {
+        const url = target.textContent;
+        console.log('clic: url=', url);
+        window.open(url, '_blank');
+      }
+    });
+    return cm;
   }
 
   constructExamplesList() {
