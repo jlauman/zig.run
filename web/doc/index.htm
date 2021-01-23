@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/index.css" />
     <script src="/lib/codemirror-5.58.3/codemirror.js" defer></script>
     <script src="/lib/codemirror-5.58.3/mode/zig.js" defer></script>
+    <script src="/version.js"></script>
     <script src="/index.js" defer></script>
   </head>
 
@@ -34,49 +35,106 @@
 
     <div
       id="welcome"
-      class="absolute top-0 left-1/3 w-2/3 h-full flex flex-row p-2 border-2 border-gray-400 bg-white z-20 transform duration-500 ease-in-out"
+      class="absolute top-0 left-1/3 w-2/3 h-full flex flex-col p-2 border-2 border-gray-400 bg-white z-20 transform duration-500 ease-in-out"
     >
-      <div>
-        <img
-          id="zig-mark"
-          class="w-40 m-2"
-          src="/lib/zig-logo-413593a/zig-mark.svg"
-        />
+      <div class="flex flex-row">
+        <div>
+          <img
+            id="zig-mark"
+            class="w-40 m-2"
+            src="/lib/zig-logo-413593a/zig-mark.svg"
+          />
+        </div>
+        <div class="m-2 mt-8">
+          Zig is a general-purpose programming language and toolchain<br />
+          for maintaining robust, optimal, and reusable software.<br />
+          <br />
+          <div class="m-2">
+            <svg class="feather inline-block w-4 mr-2">
+              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#link" />
+            </svg>
+            <a
+              class="hover:underline"
+              target="_blank"
+              href="https://ziglang.org"
+              >https://ziglang.org</a
+            >
+          </div>
+          <div class="m-2">
+            <svg class="feather inline-block w-4 mr-2">
+              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#book" />
+            </svg>
+            <a
+              class="hover:underline"
+              target="_blank"
+              href="https://ziglang.org/documentation/0.7.1"
+              >https://ziglang.org/documentation/0.7.1</a
+            >
+          </div>
+          <div class="m-2">
+            <svg class="feather inline-block w-4 mr-2">
+              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#github" />
+            </svg>
+            <a
+              class="hover:underline"
+              target="_blank"
+              href="https://github.com/ziglang/zig"
+              >https://github.com/ziglang/zig</a
+            >
+          </div>
+        </div>
       </div>
-      <div class="m-2 mt-8">
-        Zig is a general-purpose programming language and toolchain<br />
-        for maintaining robust, optimal, and reusable software.<br />
+      <div class="absolute bottom-0 m-2">
+        made with...<br />
+        <span class="ml-4">
+          codemirror:
+          <a
+            class="hover:underline"
+            target="_blank"
+            href="https://codemirror.net/"
+            >https://codemirror.net/</a
+          >
+        </span>
         <br />
-        <div class="m-2">
-          <svg class="feather inline-block w-4 mr-2">
-            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#link" />
-          </svg>
-          <a class="hover:underline" target="_blank" href="https://ziglang.org"
-            >https://ziglang.org</a
-          >
-        </div>
-        <div class="m-2">
-          <svg class="feather inline-block w-4 mr-2">
-            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#book" />
-          </svg>
+        <span class="ml-4">
+          feathericons:
           <a
             class="hover:underline"
             target="_blank"
-            href="https://ziglang.org/documentation/0.7.1"
-            >https://ziglang.org/documentation/0.7.1</a
+            href="https://feathericons.com/"
+            >https://feathericons.com/</a
           >
-        </div>
-        <div class="m-2">
-          <svg class="feather inline-block w-4 mr-2">
-            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#github" />
-          </svg>
+        </span>
+        <br />
+        <span class="ml-4">
+          tailwindcss:
           <a
             class="hover:underline"
             target="_blank"
-            href="https://github.com/ziglang/zig"
-            >https://github.com/ziglang/zig</a
+            href="https://tailwindcss.com/"
+            >https://tailwindcss.com/</a
           >
-        </div>
+        </span>
+        <br />
+        <span class="ml-4">
+          zig logos:
+          <a
+            class="hover:underline"
+            target="_blank"
+            href="https://github.com/ziglang/logo"
+            >https://github.com/ziglang/logo</a
+          >
+        </span>
+        <br />
+        <b>zig.run</b>:
+        <a
+          class="hover:underline"
+          target="_blank"
+          href="https://github.com/jlauman/zig.run"
+          >https://github.com/jlauman/zig.run</a
+        >
+        <span id="version_build" class="ml-4">build=?</span>
+        <span id="version_commit" class="ml-4">commit=?</span>
       </div>
     </div>
 

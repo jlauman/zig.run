@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-sudo podman run \
+SCRIPT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )
+cd ${SCRIPT_PATH}/..
+
+
+sudo docker run \
     --name zig.run \
     --cap-add=NET_ADMIN \
     --volume ./log:/var/log/lighttpd \
@@ -8,7 +12,7 @@ sudo podman run \
     --volume ./web/src:/home/web/src \
     --publish "0.0.0.0:8080:80/tcp" \
     --rm -it \
-    zig.run:latest
+    zig.run:local
 
 
     # --mount type=volume,source=web_tmp,target=/home/web/tmp \

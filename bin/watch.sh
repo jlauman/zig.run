@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+SCRIPT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )
+cd ${SCRIPT_PATH}/..
+
+
 # sudo apt install inotify-tools
 
 bin/compile_file_zig.sh

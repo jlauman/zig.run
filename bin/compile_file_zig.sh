@@ -2,6 +2,10 @@
 set -e
 # set -x
 
+SCRIPT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )
+cd ${SCRIPT_PATH}/..
+
+
 zig build-exe \
     -target x86_64-linux-gnu \
     -femit-bin=./web/bin/file.cgi \
@@ -13,7 +17,7 @@ echo '' | ./bin/file.cgi
 cd ..
 
 
-CONTAINER=$(sudo podman ps -q -f 'ancestor=localhost/zig.run')
+CONTAINER=$(sudo docker ps -q -f 'ancestor=localhost/zig.run')
 if [[ ! -z "$CONTAINER" ]]; then
-    sudo podman cp ./web/bin/file.cgi ${CONTAINER}:/home/web/bin/file.cgi
+    sudo docker cp ./web/bin/file.cgi ${CONTAINER}:/home/web/bin/file.cgi
 fi

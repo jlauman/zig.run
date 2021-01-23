@@ -1,6 +1,14 @@
 window.ZigRun = window.ZigRun || {};
 
 async function main() {
+  // prettier-ignore
+  try {
+    document.getElementById('version_build').textContent = `build=${ZigRun.build}`;
+    document.getElementById('version_commit').textContent = `commit=${ZigRun.commit}`;
+  } catch (err) {
+    console.error(err);
+  }
+
   const editor = new Editor();
   window.ZigRun.editor = editor;
   editor.loadExamples();
