@@ -125,9 +125,9 @@ pub fn main() !void {
             try argv_list.append(value);
         }
     }
-    for (argv_list.items) |value, i| {
-        try stderr.print("play.cgi: argv_list[{}]={}\n", .{ i, value });
-    }
+    // for (argv_list.items) |value, i| {
+    //     try stderr.print("play.cgi: argv_list[{}]={}\n", .{ i, value });
+    // }
 
     var exec_env_map = std.BufMap.init(allocator);
     defer exec_env_map.deinit();
@@ -148,7 +148,7 @@ pub fn main() !void {
     var source_buffer: [16 * 1024]u8 = undefined;
     var source: []const u8 = undefined;
     if (mem.eql(u8, command, "fmt")) {
-        const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, file_name });
+        const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ ts_path, file_name });
         defer allocator.free(file_path);
         var source_file = try std.fs.cwd().openFile(file_path, std.fs.File.OpenFlags{ .read = true });
         defer source_file.close();

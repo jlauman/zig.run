@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Run status indicator and arguments input field.
 ### Changed
 - The play.zig CGI passes main.zig command-line arguments.
+### Fixed
+- Source file format command.
 
 
 ## [210123] - 2021-01-23
