@@ -1,17 +1,20 @@
-//! Read File
+//! bad read file
+//!
+//! try to read a file that is visible to web server.
+//!
 const std = @import("std");
 const print = std.debug.print;
 
 pub fn main() !void {
-    print("hello!\n", .{});
+    print("999_bad_read_file\n", .{});
     var cwd = std.fs.cwd();
     var buffer: [256]u8 = undefined;
 
     var file_path = try cwd.realpath(".", &buffer);
     print("cwd={}\n", .{file_path});
 
-    file_path = try cwd.realpath("main.zig", &buffer);
-    // file_path = try cwd.realpath("../src/010_read_file/main.zig", &buffer);
+    // file_path = try cwd.realpath("main.zig", &buffer);
+    file_path = try cwd.realpath("../../src/999_bad_read_file/main.zig", &buffer);
     print("file_path={}\n", .{file_path});
 
     var aa = std.heap.ArenaAllocator.init(std.heap.page_allocator);

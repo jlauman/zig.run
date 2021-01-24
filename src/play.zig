@@ -23,15 +23,15 @@ pub fn main() !void {
 
     const exe_path = try util.resolveExePath(allocator);
     defer allocator.free(exe_path);
-    try stderr.print("play.cgi: exe_path={}\n", .{exe_path});
+    // try stderr.print("play.cgi: exe_path={}\n", .{exe_path});
 
     const home_path = try util.resolveHomePath(allocator, exe_path);
     defer allocator.free(home_path);
-    try stderr.print("play.cgi: home_path={}\n", .{home_path});
+    // try stderr.print("play.cgi: home_path={}\n", .{home_path});
 
     const tmp_path = try util.resolveTmpPath(allocator, exe_path);
     defer allocator.free(tmp_path);
-    try stderr.print("play.cgi: tmp_path={}\n", .{tmp_path});
+    // try stderr.print("play.cgi: tmp_path={}\n", .{tmp_path});
     std.fs.cwd().access(tmp_path, .{ .read = true }) catch |err| {
         try stdout.print("Status: 400 Bad Request\n\n", .{});
         return;
@@ -59,6 +59,14 @@ pub fn main() !void {
     const request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
     defer std.json.parseFree(RequestResponse, request, .{ .allocator = allocator });
 
+    // use millisecond timestamp to ensure unique source file path
+    var ts_buffer: [24]u8 = undefined;
+    const ts = try std.fmt.bufPrint(&ts_buffer, "{}", .{std.time.milliTimestamp()});
+    const ts_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts });
+    defer allocator.free(ts_path);
+    try stderr.print("play.cgi: ts_path={}\n", .{ts_path});
+    try std.os.mkdir(ts_path, 0o755);
+
     // create zig file for compile step
     // try stderr.print("{}\n", .{request.source});
     var file: ?std.fs.File = null;
@@ -70,7 +78,7 @@ pub fn main() !void {
             const idx1 = 13;
             const file_name = line[idx1..];
             // try stderr.print("play.cgi: file_name={}\n", .{file_name});
-            const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, file_name });
+            const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts, file_name });
             defer allocator.free(file_path);
             try stderr.print("play.cgi: file_path={}\n", .{file_path});
             file = try std.fs.cwd().createFile(file_path, .{});
@@ -110,7 +118,7 @@ pub fn main() !void {
     const result = try std.ChildProcess.exec(.{
         .allocator = allocator,
         .argv = &argv,
-        .cwd = tmp_path,
+        .cwd = ts_path,
         .env_map = &exec_env_map,
         .max_output_bytes = 128 * 1024,
     });

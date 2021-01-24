@@ -2,16 +2,13 @@ FROM alpine:latest
 
 WORKDIR /usr/local
 
-RUN apk update --no-cache &&\
-    apk add xz &&\
+RUN apk add --no-cache iproute2 procps xz lighttpd &&\
     wget https://ziglang.org/download/0.7.1/zig-linux-x86_64-0.7.1.tar.xz &&\
     xz -dc zig-linux-x86_64-0.7.1.tar.xz | tar -x &&\
     rm zig-linux-x86_64-0.7.1.tar.xz &&\
     mv zig-linux-x86_64-0.7.1 zig    
 
-RUN apk update --no-cache &&\
-    apk add iproute2 lighttpd &&\
-    adduser -D -h /home/web -s /bin/sh web &&\
+RUN adduser -D -h /home/web -s /bin/sh web &&\
     mkdir /home/web/tmp &&\
     chown -R web.web /home/web &&\
     adduser zig -D -H
