@@ -598,6 +598,10 @@ video {
   margin-bottom: 0.5rem;
 }
 
+.mr-4 {
+  margin-right: 1rem;
+}
+
 .ml-4 {
   margin-left: 1rem;
 }

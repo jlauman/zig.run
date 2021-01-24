@@ -24,15 +24,15 @@ pub fn main() !void {
 
     const exe_path = try util.resolveExePath(allocator);
     defer allocator.free(exe_path);
-    try stderr.print("file.cgi: exe_path={}\n", .{exe_path});
+    // try stderr.print("file.cgi: exe_path={}\n", .{exe_path});
 
     const home_path = try util.resolveHomePath(allocator, exe_path);
     defer allocator.free(home_path);
-    try stderr.print("file.cgi: home_path={}\n", .{home_path});
+    // try stderr.print("file.cgi: home_path={}\n", .{home_path});
 
     const tmp_path = try util.resolveTmpPath(allocator, exe_path);
     defer allocator.free(tmp_path);
-    try stderr.print("file.cgi: tmp_path={}\n", .{tmp_path});
+    // try stderr.print("file.cgi: tmp_path={}\n", .{tmp_path});
     std.fs.cwd().access(tmp_path, .{ .read = true }) catch |err| {
         try stdout.print("Status: 400 Bad Request\n\n", .{});
         return;
@@ -87,7 +87,7 @@ pub fn main() !void {
         while (try it.next()) |entry| {
             if (entry.kind == .File) {
                 const file_name = entry.name;
-                try stderr.print("file.cgi: file_name={}\n", .{file_name});
+                // try stderr.print("file.cgi: file_name={}\n", .{file_name});
                 try string2.appendSlice("//@file_name=");
                 try string2.appendSlice(file_name);
                 try string2.appendSlice("\n");
@@ -114,8 +114,8 @@ pub fn main() !void {
             if (entry.kind == .Directory) {
                 const title = try util.readMainTitle(allocator, src_path, entry.name);
                 // free after json is serialized!!!
-                try stderr.print("file.cgi: name={}\n", .{entry.name});
-                try stderr.print("file.cgi: title={}\n", .{title});
+                // try stderr.print("file.cgi: name={}\n", .{entry.name});
+                // try stderr.print("file.cgi: title={}\n", .{title});
                 const tmp = ResponseEntry{ .title = title, .name = entry.name };
                 try exampleList.append(tmp);
             }

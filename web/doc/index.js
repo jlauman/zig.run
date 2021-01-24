@@ -115,14 +115,19 @@ class Editor {
       value: '',
       mode: 'textlink',
       lineNumbers: false,
-      readOnly: false,
+      readOnly: true,
     });
-    cm.on('mousedown', function (instance, event) {
+    cm.on('mousedown', function (_instance, event) {
       const target = event.target;
       if (target.classList.contains('cm-link')) {
         const url = target.textContent;
-        console.log('clic: url=', url);
-        window.open(url, '_blank');
+        console.log('click: url=', url);
+        if (url.startsWith('https://zig.run')) {
+          const fragment = url.split('#')[1];
+          document.location = `#${fragment}`;
+        } else {
+          window.open(url, '_blank');
+        }
       }
     });
     return cm;
@@ -165,12 +170,12 @@ class Editor {
 
   documentClickListener(event) {
     let target = event.target;
-    // console.log("documentClickListener: target=", target);
     // the click handler is on the document so the svg "use" element
     // may be the target of a button click.
     if (target.tagName.toLowerCase() === 'use') {
       target = target.parentElement;
     }
+    // console.log('documentClickListener: target=', target);
 
     if (target.classList.contains('tab')) {
       const fileName = target.dataset.file_name;
@@ -195,6 +200,32 @@ class Editor {
 
     if (target.id === 'examples_menu_button') {
       this.closeDropDowns();
+      return;
+    }
+
+    if (target.id === 'previous_example_button') {
+      const fragment = getDocumentFragment();
+      let last = null;
+      for (let example of this.examples) {
+        if (fragment === example.name && last != null) {
+          document.location = `#${last.name}`;
+          break;
+        }
+        last = example;
+      }
+      return;
+    }
+
+    if (target.id === 'next_example_button') {
+      const fragment = getDocumentFragment();
+      let last = null;
+      for (let example of this.examples) {
+        if (last) {
+          document.location = `#${example.name}`;
+          break;
+        }
+        if (fragment === example.name) last = example;
+      }
       return;
     }
 
@@ -234,7 +265,7 @@ class Editor {
     console.log('loadExample: example=', example);
     if (!example) {
       document.getElementById(
-        'editor_name'
+        'example_title'
       ).textContent = `NO EXAMPLE WITH NAME ${name}`;
       return;
     }
@@ -262,9 +293,31 @@ class Editor {
     });
     // console.log(this._sourceFiles);
     // set example title
-    document.getElementById('editor_name').textContent = example.title;
+    this.setExampleTitle(name);
     this.loadExampleSourceDocs();
     this.loadExampleTabs();
+  }
+
+  setExampleTitle(name) {
+    for (let i = 0; i < this.examples.length; i++) {
+      let example = this.examples[i];
+      if (example.name === name) {
+        document.getElementById('example_title').textContent = example.title;
+        // previous example button
+        const prev_el = document.getElementById('previous_example_title');
+        prev_el.classList.remove('hidden');
+        if (i > 0) {
+          prev_el.title = this.examples[i - 1].title;
+        } else prev_el.classList.add('hidden');
+        // next example button
+        const next_el = document.getElementById('next_example_title');
+        next_el.classList.remove('hidden');
+        if (i < this.examples.length - 1) {
+          next_el.title = this.examples[i + 1].title;
+        } else next_el.classList.add('hidden');
+        break;
+      }
+    }
   }
 
   loadExampleSourceDocs() {
@@ -372,7 +425,9 @@ class Editor {
         this.setSelectedFileSource(json.source);
       } else {
         // command === run || command === test
-        this._outputCodeMirror.setValue(json.stdout + '\n--- 2&>1 ---\n' + json.stderr);
+        this._outputCodeMirror.setValue(
+          json.stdout + '\n--- 2&>1 ---\n' + json.stderr
+        );
       }
     } else {
       let text = await response.text();
