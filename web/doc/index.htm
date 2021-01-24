@@ -176,7 +176,26 @@
 
       <div id="tabs" class="relative flex flex-row"></div>
 
-      <div id="docs" class="relative flex flex-row"></div>
+      <div id="args" class="relative flex flex-row">
+        <svg
+          id="run_status_stop"
+          class="feather absolute top-1.5 left-1.5 h-4/5"
+          alt="run main"
+        >
+          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#circle" />
+        </svg>
+        <svg
+          id="run_status_exec"
+          class="feather absolute top-1.5 left-1.5 h-4/5 hidden animate-ping"
+          alt="run main"
+        >
+          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle" />
+        </svg>
+        <label class="ml-12">
+          <span>argv</span>
+          <input id="argv" class="px-1 text-sm"/>
+        </label>
+      </div>
 
       <div id="source_buttons" class="">
         <svg

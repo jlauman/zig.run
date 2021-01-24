@@ -9,6 +9,7 @@ const RequestResponse = struct {
     command: []const u8,
     file_name: []const u8,
     source: []const u8,
+    argv: []const u8,
     stderr: []const u8,
     stdout: []const u8,
 };
@@ -110,14 +111,31 @@ pub fn main() !void {
         file_name = request.file_name;
     }
 
-    const argv = [_][]const u8{ "/usr/local/zig/zig", command, file_name };
+    var argv_list = std.ArrayList([]const u8).init(allocator);
+    defer argv_list.deinit();
+    try argv_list.append("/usr/local/zig/zig");
+    try argv_list.append(command);
+    try argv_list.append(file_name);
+
+    try stderr.print("play.cgi: request.argv.len={}\n", .{request.argv.len});
+    if (mem.eql(u8, command, "run") and request.argv.len > 0) {
+        try argv_list.append("--");
+        var it = std.mem.split(request.argv, " ");
+        while (it.next()) |value| {
+            try argv_list.append(value);
+        }
+    }
+    for (argv_list.items) |value, i| {
+        try stderr.print("play.cgi: argv_list[{}]={}\n", .{ i, value });
+    }
+
     var exec_env_map = std.BufMap.init(allocator);
     defer exec_env_map.deinit();
     try exec_env_map.set("HOME", home_path);
 
     const result = try std.ChildProcess.exec(.{
         .allocator = allocator,
-        .argv = &argv,
+        .argv = argv_list.items,
         .cwd = ts_path,
         .env_map = &exec_env_map,
         .max_output_bytes = 128 * 1024,
@@ -144,6 +162,7 @@ pub fn main() !void {
         .command = command,
         .file_name = file_name,
         .source = source,
+        .argv = "",
         .stderr = result.stderr,
         .stdout = result.stdout,
     };

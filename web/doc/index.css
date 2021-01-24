@@ -18,7 +18,7 @@
   grid-row: 2;
 }
 
-#docs {
+#args {
   grid-column: 4 / 5;
   grid-row: 2;
 }
@@ -36,6 +36,14 @@
 #output_panel {
   grid-column: 4 / 5;
   grid-row: 3;
+}
+
+#run_status_stop {
+  stroke: #6b7280;
+}
+
+#run_status_exec {
+  stroke: #fbbf24;
 }
 
 .CodeMirror {

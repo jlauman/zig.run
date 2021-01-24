@@ -394,6 +394,16 @@ class Editor {
     // this._sourceCodeMirror.refresh();
   }
 
+  spinner(active) {
+    const el = document.getElementById('run_status_exec');
+    if (active) {
+      el.classList.remove('hidden');
+      // el.classList.add('');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+
   async command(command) {
     this._outputCodeMirror.setValue('');
     if (this._fileName != null) {
@@ -407,34 +417,42 @@ class Editor {
       files.push(`//@file_name=${file.name}`);
       files.push(file.code);
     }
-    let response = await fetch('/bin/play.cgi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        command: command,
-        file_name: command === 'run' ? 'main.zig' : this.getSelectedFileName(),
-        source: files.join('\n'),
-        stderr: '', // play.cgi uses same struct for request and response
-        stdout: '', // so stderr and stdout are required request properties.
-      }),
-    });
-    if (response.status === 200) {
-      let json = await response.json();
-      // console.log(json);
-      if (command === 'format') {
-        this.setSelectedFileSource(json.source);
+    const argv = document.getElementById('argv').value.trim();
+    try {
+      this.spinner(true);
+      let response = await fetch('/bin/play.cgi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command: command,
+          file_name:
+            command === 'run' ? 'main.zig' : this.getSelectedFileName(),
+          source: files.join('\n'),
+          argv: argv,
+          stderr: '', // play.cgi uses same struct for request and response
+          stdout: '', // so stderr and stdout are required request properties.
+        }),
+      });
+      if (response.status === 200) {
+        let json = await response.json();
+        // console.log(json);
+        if (command === 'format') {
+          this.setSelectedFileSource(json.source);
+        } else {
+          // command === run || command === test
+          this._outputCodeMirror.setValue(
+            json.stdout + '\n--- 2&>1 ---\n' + json.stderr
+          );
+        }
       } else {
-        // command === run || command === test
+        let text = await response.text();
+        console.log(text);
         this._outputCodeMirror.setValue(
-          json.stdout + '\n--- 2&>1 ---\n' + json.stderr
+          `statusText=${response.statusText}${text}`
         );
       }
-    } else {
-      let text = await response.text();
-      console.log(text);
-      this._outputCodeMirror.setValue(
-        `statusText=${response.statusText}${text}`
-      );
+    } finally {
+      this.spinner(false);
     }
   }
 }
