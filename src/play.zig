@@ -5,11 +5,13 @@ const process = std.process;
 const Allocator = std.mem.Allocator;
 const util = @import("util.zig");
 
-
 const RequestResponse = struct {
-    command: []const u8, file_name: []const u8, source: []const u8, output: []const u8
+    command: []const u8,
+    file_name: []const u8,
+    source: []const u8,
+    stderr: []const u8,
+    stdout: []const u8,
 };
-
 
 pub fn main() !void {
     const stderr = std.io.getStdErr().writer();
@@ -130,7 +132,13 @@ pub fn main() !void {
         source = "";
     }
 
-    const response = &RequestResponse{ .command = command, .file_name = file_name, .source = source, .output = result.stderr };
+    const response = &RequestResponse{
+        .command = command,
+        .file_name = file_name,
+        .source = source,
+        .stderr = result.stderr,
+        .stdout = result.stdout,
+    };
     var string2 = std.ArrayList(u8).init(allocator);
     defer string2.deinit();
 

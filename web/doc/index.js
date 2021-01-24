@@ -361,7 +361,8 @@ class Editor {
         command: command,
         file_name: command === 'run' ? 'main.zig' : this.getSelectedFileName(),
         source: files.join('\n'),
-        output: '',
+        stderr: '', // play.cgi uses same struct for request and response
+        stdout: '', // so stderr and stdout are required request properties.
       }),
     });
     if (response.status === 200) {
@@ -371,7 +372,7 @@ class Editor {
         this.setSelectedFileSource(json.source);
       } else {
         // command === run || command === test
-        this._outputCodeMirror.setValue(json.output);
+        this._outputCodeMirror.setValue(json.stdout + '\n--- 2&>1 ---\n' + json.stderr);
       }
     } else {
       let text = await response.text();

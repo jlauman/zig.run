@@ -13,7 +13,7 @@ zig build-exe \
 
 
 cd web
-echo '{"command":"run","file_name":"","source":"//@filename=main.zig\nconst std = @import(\"std\");\npub fn main() !void {\n  std.debug.print(\"hello world!\\n\", .{});\n}","output":""}' | ./bin/play.cgi
+echo '{"command":"run","file_name":"","source":"//@filename=main.zig\nconst std = @import(\"std\");\npub fn main() !void {\n  std.debug.print(\"hello world!\\n\", .{});\n}","stderr":"","stdout":""}' | ./bin/play.cgi
 cd ..
 
 
