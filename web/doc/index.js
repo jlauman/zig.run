@@ -445,11 +445,10 @@ class Editor {
           );
         }
       } else {
-        let text = await response.text();
-        console.log(text);
-        this._outputCodeMirror.setValue(
-          `statusText=${response.statusText}${text}`
-        );
+        // let text = await response.text();
+        let status = `ERROR: ${response.status} (${response.statusText})`;
+        console.error(status);
+        this._outputCodeMirror.setValue(status);
       }
     } finally {
       this.spinner(false);
