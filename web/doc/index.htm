@@ -189,38 +189,46 @@
           class="feather absolute top-1.5 left-1.5 h-4/5 hidden exec_color animate-ping"
           alt="run main"
         >
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle" />
+          <use
+            xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle"
+          />
         </svg>
         <label class="ml-12">
           <span>argv</span>
-          <input id="argv" class="px-1 text-sm"/>
+          <input id="argv" class="px-1 text-sm" />
         </label>
       </div>
 
       <div id="source_buttons" class="">
-        <svg
-          id="run_main_button"
-          class="feather svg-button mb-2"
-          alt="run main"
-        >
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play" />
-        </svg>
-        <svg
+        <span title="run main.zig">
+          <svg
+            id="run_main_button"
+            class="feather svg-button mb-2"
+            alt="run main"
+          >
+            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play" />
+          </svg>
+        </span>
+        <span title="test selected file">
+          <svg
           id="test_file_button"
           class="feather svg-button mb-2"
           alt="test file"
         >
           <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#check" />
         </svg>
-        <svg
-          id="format_file_button"
-          class="feather svg-button mb-2"
-          alt="format file"
-        >
-          <use
-            xlink:href="/lib/feather-4.28.0/feather-sprite.svg#align-center"
-          />
-        </svg>
+        </span>
+        <span title="format selected file">
+          <svg
+            id="format_file_button"
+            class="feather svg-button mb-2"
+            alt="format file"
+          >
+            <use
+              xlink:href="/lib/feather-4.28.0/feather-sprite.svg#align-center"
+            />
+          </svg>
+        </span>
       </div>
 
       <div
