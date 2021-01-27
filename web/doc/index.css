@@ -38,14 +38,6 @@
   grid-row: 3;
 }
 
-#run_status_stop {
-  stroke: #6b7280;
-}
-
-#run_status_exec {
-  stroke: #fbbf24;
-}
-
 .CodeMirror {
   height: 100%;
 }
@@ -88,4 +80,12 @@
 
 :hover.example_name {
   border-left-color: #fbbf24;
+}
+
+.stop_color {
+  stroke: #6b7280;
+}
+
+.exec_color {
+  stroke: #fbbf24;
 }

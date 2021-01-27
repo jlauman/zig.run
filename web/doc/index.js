@@ -395,12 +395,16 @@ class Editor {
   }
 
   spinner(active) {
-    const el = document.getElementById('run_status_exec');
+    const el1 = document.getElementById('run_status_circle');
+    const el2 = document.getElementById('run_status_play');
     if (active) {
-      el.classList.remove('hidden');
-      // el.classList.add('');
+      el1.classList.remove('stop_color');
+      el1.classList.add('exec_color');
+      el2.classList.remove('hidden');
     } else {
-      el.classList.add('hidden');
+      el1.classList.remove('exec_color');
+      el1.classList.add('stop_color');
+      el2.classList.add('hidden');
     }
   }
 
