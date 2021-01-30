@@ -14,13 +14,19 @@ async function main() {
   await editor.loadExamples();
 
   const handler = function () {
-    window.scrollTo(0,0);
+    // hack to ensure the browser's scroll is zero-ed
+    window.scrollTo(0, 0);
     const exampleName = getDocumentFragment();
-    if (exampleName) {
+    const el = document.getElementById('slide');
+    if (exampleName && el.classList.contains('page-1')) {
       editor.loadExample(exampleName);
-      editor.closeDropDowns1();
+      const slide = document.getElementById('slide_after_select').checked;
+      if (slide) editor.setPage(2);
+    } else if (exampleName) {
+      editor.loadExample(exampleName);
+      editor.setPage(2);
     } else {
-      editor.openDropDowns();
+      editor.setPage(0);
     }
   };
 
@@ -28,7 +34,7 @@ async function main() {
   if (exampleName) handler();
 
   window.addEventListener('hashchange', handler, false);
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
 function getDocumentFragment() {
@@ -148,51 +154,20 @@ class Editor {
     }
   }
 
-  closeDropDowns2() {
-    const el = document.getElementById('slide');
-    el.classList.remove('page-0');
-    el.classList.remove('page-1');
-    el.classList.add('page-2');
-    // const elts = [
-    //   document.getElementById('examples'),
-    //   document.getElementById('welcome'),
-    // ];
-    // for (const elt of elts) {
-    //   elt.classList.remove('translate-y-0');
-    //   elt.classList.add('-translate-y-full');
-    // }
-  }
-
-  closeDropDowns1() {
-    const el = document.getElementById('slide');
-    el.classList.remove('page-0');
-    el.classList.remove('page-2');
-    el.classList.add('page-1');
-    // const elts = [
-    //   document.getElementById('examples'),
-    //   document.getElementById('welcome'),
-    // ];
-    // for (const elt of elts) {
-    //   elt.classList.remove('translate-y-0');
-    //   elt.classList.add('-translate-y-full');
-    // }
-  }
-
-  openDropDowns() {
-    const el = document.getElementById('slide');
-    el.classList.remove('page-2');
-    el.classList.remove('page-1');
-    el.classList.add('page-0');
-
-    // setTimeout(() => window.scrollTo(0,0), 100);
-    // const elts = [
-    //   document.getElementById('examples'),
-    //   document.getElementById('welcome'),
-    // ];
-    // for (const elt of elts) {
-    //   elt.classList.remove('-translate-y-full');
-    //   elt.classList.add('translate-y-0');
-    // }
+  setPage(number) {
+    if (number > -1 && number < 3) {
+      const el = document.getElementById('slide');
+      for (let i = 0; i < 3; i++) el.classList.remove(`page-${i}`);
+      el.classList.add(`page-${number}`);
+      const slb_el = document.getElementById('slide_left_button');
+      const srb_el = document.getElementById('slide_right_button');
+      if (number == 0) slb_el.classList.add('hidden');
+      else slb_el.classList.remove('hidden');
+      if (number == 2) srb_el.classList.add('hidden');
+      else srb_el.classList.remove('hidden');
+    } else {
+      throw new Error(`invalid page number=${number}`);
+    }
   }
 
   documentClickListener(event) {
@@ -206,24 +181,20 @@ class Editor {
 
     if (target.id === 'slide_left_button') {
       const el = document.getElementById('slide');
-      if (el.classList.contains('page-0')) {
-        el.classList.remove('page-0');
-        el.classList.add('page-1');
+      if (el.classList.contains('page-2')) {
+        this.setPage(1);
       } else if (el.classList.contains('page-1')) {
-        el.classList.remove('page-1');
-        el.classList.add('page-2');
+        this.setPage(0);
       }
       return;
     }
 
     if (target.id === 'slide_right_button') {
       const el = document.getElementById('slide');
-      if (el.classList.contains('page-2')) {
-        el.classList.remove('page-2');
-        el.classList.add('page-1');
+      if (el.classList.contains('page-0')) {
+        this.setPage(1);
       } else if (el.classList.contains('page-1')) {
-        el.classList.remove('page-1');
-        el.classList.add('page-0');
+        this.setPage(2);
       }
       return;
     }
@@ -235,13 +206,13 @@ class Editor {
     }
 
     if (target.id == 'run_main_button') {
-      this.closeDropDowns2();
+      this.setPage(2);
       this.command('run');
       return;
     }
 
     if (target.id === 'test_file_button') {
-      this.closeDropDowns2();
+      this.setPage(2);
       this.command('test');
       return;
     }
@@ -252,7 +223,7 @@ class Editor {
     }
 
     if (target.id === 'examples_menu_button') {
-      this.closeDropDowns1();
+      this.setPage(1);
       return;
     }
 
@@ -279,18 +250,6 @@ class Editor {
     //     }
     //     if (fragment === example.name) last = example;
     //   }
-    //   return;
-    // }
-
-    if (target.id === 'editor_menu_button') {
-      const elt = document.getElementById('examples');
-      // elt.classList.add('translate-y-0');
-      // elt.classList.remove('-translate-y-full');
-      return;
-    }
-
-    // if (target.id === 'welcome_button') {
-    //   this.openDropDowns();
     //   return;
     // }
 

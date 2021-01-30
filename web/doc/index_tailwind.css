@@ -200,7 +200,8 @@ select { /* 1 */
 Correct the inability to style clickable types in iOS and Safari.
 */
 
-button {
+button,
+[type='button'] {
   -webkit-appearance: button;
 }
 
@@ -578,10 +579,6 @@ video {
   height: 80%;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -604,8 +601,16 @@ video {
   margin-bottom: 0.5rem;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
 .mr-4 {
   margin-right: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 .ml-4 {
@@ -624,16 +629,8 @@ video {
   margin-left: 3rem;
 }
 
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .overflow-scroll {
   overflow: scroll;
-}
-
-.p-4 {
-  padding: 1rem;
 }
 
 .px-1 {
@@ -665,10 +662,6 @@ video {
   right: 0px;
 }
 
-.bottom-0 {
-  bottom: 0px;
-}
-
 .left-0 {
   left: 0px;
 }
@@ -679,6 +672,10 @@ video {
 
 .left-1 {
   left: 0.25rem;
+}
+
+.bottom-2 {
+  bottom: 0.5rem;
 }
 
 .top-1\.5 {
@@ -702,10 +699,6 @@ video {
   --tw-ring-shadow: 0 0 #0000;
 }
 
-.hover\:underline:hover {
-  text-decoration: underline;
-}
-
 .w-4 {
   width: 1rem;
 }
@@ -714,20 +707,8 @@ video {
   width: 10rem;
 }
 
-.w-screen {
-  width: 100vw;
-}
-
 .z-30 {
   z-index: 30;
-}
-
-.translate-y-0 {
-  --tw-translate-y: 0px;
-}
-
-.-translate-y-full {
-  --tw-translate-y: -100%;
 }
 
 @-webkit-keyframes spin {

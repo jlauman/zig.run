@@ -1,6 +1,13 @@
-html, body {
+html,
+body {
   max-width: 100vw;
-  overflow-x: hidden;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: #f7a41d;
 }
 
 #slide {
@@ -23,7 +30,7 @@ html, body {
   left: -100vw;
 }
 
-#welcome {
+#zig_page {
   position: absolute;
   left: 0vw;
   top: 0vh;
@@ -31,7 +38,7 @@ html, body {
   height: 100vh;
 }
 
-#examples {
+#example_page {
   position: absolute;
   left: 50vw;
   top: 0vh;
@@ -39,32 +46,25 @@ html, body {
   height: 100vh;
 }
 
-#editor {
+#source_page {
   position: absolute;
   left: 100vw;
   top: 0vh;
-  width: 100vw;
+  width: 50vw;
   height: 100vh;
   display: grid;
   gap: 4px;
-  grid-template-columns: 24px 1fr 24px 1fr;
+  grid-template-columns: 24px 1fr;
   grid-template-rows: 24px 24px 1fr;
-  /* width: 100vw;
-  height: 100vh; */
 }
 
 #header {
-  grid-column: 1 / 5;
+  grid-column: 2 / 3;
   grid-row: 1;
 }
 
 #tabs {
   grid-column: 2 / 3;
-  grid-row: 2;
-}
-
-#args {
-  grid-column: 4 / 5;
   grid-row: 2;
 }
 
@@ -78,8 +78,25 @@ html, body {
   grid-row: 3;
 }
 
+#output_page {
+  position: absolute;
+  left: 150vw;
+  top: 0vh;
+  width: 50vw;
+  height: 100vh;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 24px 1fr;
+  grid-template-rows: 24px 24px 1fr;
+}
+
+#args {
+  grid-column: 2 / 3;
+  grid-row: 2;
+}
+
 #output_panel {
-  grid-column: 4 / 5;
+  grid-column: 2 / 3;
   grid-row: 3;
 }
 
@@ -101,7 +118,7 @@ html, body {
 }
 
 :hover.tab {
-  border-top-color: #fbbf24;
+  border-top-color: #f7a41d;
 }
 
 .tab-active {
@@ -114,14 +131,13 @@ html, body {
   border-top-color: black;
 }
 
-
 .example_name {
   border-left-width: 4px;
   border-left-color: #f3f4f6;
 }
 
 :hover.example_name {
-  border-left-color: #fbbf24;
+  border-left-color: #f7a41d;
 }
 
 .stop_color {
@@ -129,9 +145,9 @@ html, body {
 }
 
 .exec_color {
-  stroke: #fbbf24;
-} 
+  stroke: #f7a41d;
+}
 
 :hover.svg-button {
-  stroke: #fbbf24;
+  stroke: #f7a41d;
 }
