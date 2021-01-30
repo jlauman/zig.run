@@ -1,4 +1,6 @@
-//! math error
+//! math overflow
+//!
+//! See the `math.zig` file.
 //!
 const std = @import("std");
 

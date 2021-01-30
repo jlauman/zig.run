@@ -1,3 +1,13 @@
+//! Integer operations that cause values to exceed the number
+//! of bits available for representation are one of the 
+//! instances of undefined behavior. Refer to the Zig documentation
+//! for methods of handling undefined behavior at runtime.
+//!
+//! see: https://ziglang.org/documentation/0.7.1/#Undefined-Behavior 
+//! see: https://ziglang.org/documentation/0.7.1/#Integer-Overflow
+//! see: https://ziglang.org/documentation/0.7.1/#addWithOverflow
+//! see: https://ziglang.org/documentation/0.7.1/#subWithOverflow
+//!
 const std = @import("std");
 const expectError = std.testing.expectError;
 const expectEqual = std.testing.expectEqual;

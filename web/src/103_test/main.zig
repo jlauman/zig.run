@@ -29,8 +29,8 @@ pub fn main() !void {
     print("use zig test command.", .{});
 }
 
-// press the checkmark button on the left to execute
-// "zig test main.zig" in the code playground.
+// Press the checkmark button on the left to execute
+// `zig test main.zig` in the code playground.
 test "std.builtin.is_test" {
     expect(std.builtin.is_test);
 }

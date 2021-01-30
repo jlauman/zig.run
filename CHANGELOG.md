@@ -6,11 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+### Changed
+### Fixed
+
+
+## [210130] - 20210130
+### Added
 - Tooltips to run, test, and format buttons.
-- Two examples: 105 and 106.
+- Two examples and updated others.
+- Ctrl-/ line comment behavior to codemirror.
 ### Changed
 - Example run state indicator color.
+- Sliding half-screen layout for views.
+- Reordered examples.
 ### Fixed
+- Zig-orange color in CSS.
 
 
 ## [210124] - 2021-01-24
