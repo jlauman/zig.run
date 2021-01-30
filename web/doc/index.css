@@ -1,11 +1,56 @@
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#slide {
+  position: absolute;
+  top: 0;
+  width: 200vw;
+  height: 100vh;
+  transition: left 0.75s ease;
+}
+
+#slide.page-0 {
+  left: 0vw;
+}
+
+#slide.page-1 {
+  left: -50vw;
+}
+
+#slide.page-2 {
+  left: -100vw;
+}
+
+#welcome {
+  position: absolute;
+  left: 0vw;
+  top: 0vh;
+  width: 50vw;
+  height: 100vh;
+}
+
+#examples {
+  position: absolute;
+  left: 50vw;
+  top: 0vh;
+  width: 50vw;
+  height: 100vh;
+}
 
 #editor {
+  position: absolute;
+  left: 100vw;
+  top: 0vh;
+  width: 100vw;
+  height: 100vh;
   display: grid;
   gap: 4px;
   grid-template-columns: 24px 1fr 24px 1fr;
   grid-template-rows: 24px 24px 1fr;
-  width: 100vw;
-  height: 100vh;
+  /* width: 100vw;
+  height: 100vh; */
 }
 
 #header {
@@ -42,10 +87,6 @@
   height: 100%;
 }
 
-:hover.svg-button {
-  stroke: #fbbf24;
-}
-
 .tab {
   position: relative;
   bottom: -4px;
@@ -73,6 +114,7 @@
   border-top-color: black;
 }
 
+
 .example_name {
   border-left-width: 4px;
   border-left-color: #f3f4f6;
@@ -87,5 +129,9 @@
 }
 
 .exec_color {
+  stroke: #fbbf24;
+} 
+
+:hover.svg-button {
   stroke: #fbbf24;
 }

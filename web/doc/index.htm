@@ -16,230 +16,228 @@
     <script src="/index.js" defer></script>
   </head>
 
-  <body class="relative bg-gray-100">
-    <div
-      id="examples"
-      class="absolute top-0 left-0 w-1/3 h-full flex flex-col p-2 border-2 border-gray-400 bg-white z-20 transform duration-500 ease-in-out"
-    >
-      <div class="flex flex-row">
-        <svg id="examples_menu_button" class="feather svg-button">
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#menu" />
-        </svg>
-        <div class="flex flex-1 justify-center">
-          <div class="text-md">Please select an example...</div>
-        </div>
-      </div>
-      <div class="flex flex-row m-2 rounded-sm bg-white">
-        <ul id="example_list" class="m-2"></ul>
-      </div>
+  <body id="slide_container" class="bg-blue-500">
+    <div class="fixed top-0 left-0 z-30" title="???">
+      <svg id="slide_right_button" class="feather svg-button m-2">
+        <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-left" />
+      </svg>
     </div>
-
-    <div
-      id="welcome"
-      class="absolute top-0 left-1/3 w-2/3 h-full flex flex-col p-2 border-2 border-gray-400 bg-white z-20 transform duration-500 ease-in-out"
-    >
-      <div class="flex flex-row">
-        <div>
-          <img
-            id="zig-mark"
-            class="w-40 m-2"
-            src="/lib/zig-logo-413593a/zig-mark.svg"
-          />
+    <div class="fixed top-0 right-0 z-30" title="???">
+      <svg id="slide_left_button" class="feather svg-button m-2">
+        <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-right" />
+      </svg>
+    </div>
+    <!-- <div id="slide_container" class="fixed top-0 left-0 w-screen h-screen overflow-hidden"> -->
+    <div id="slide" class="page-0 bg-gray-100">
+      <!-- welcome page -->
+      <div id="welcome" class="flex flex-col p-4">
+        <div class="flex flex-row">
+          <div>
+            <img
+              id="zig-mark"
+              class="w-40 m-2"
+              src="/lib/zig-logo-413593a/zig-mark.svg"
+            />
+          </div>
+          <div class="m-2 mt-8">
+            Zig is a general-purpose programming language and toolchain<br />
+            for maintaining robust, optimal, and reusable software.<br />
+            <br />
+            <div class="m-2">
+              <svg class="feather inline-block w-4 mr-2">
+                <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#link" />
+              </svg>
+              <a
+                class="hover:underline"
+                target="_blank"
+                href="https://ziglang.org"
+                >https://ziglang.org</a
+              >
+            </div>
+            <div class="m-2">
+              <svg class="feather inline-block w-4 mr-2">
+                <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#book" />
+              </svg>
+              <a
+                class="hover:underline"
+                target="_blank"
+                href="https://ziglang.org/documentation/0.7.1"
+                >https://ziglang.org/documentation/0.7.1</a
+              >
+            </div>
+            <div class="m-2">
+              <svg class="feather inline-block w-4 mr-2">
+                <use
+                  xlink:href="/lib/feather-4.28.0/feather-sprite.svg#github"
+                />
+              </svg>
+              <a
+                class="hover:underline"
+                target="_blank"
+                href="https://github.com/ziglang/zig"
+                >https://github.com/ziglang/zig</a
+              >
+            </div>
+          </div>
         </div>
-        <div class="m-2 mt-8">
-          Zig is a general-purpose programming language and toolchain<br />
-          for maintaining robust, optimal, and reusable software.<br />
+        <div class="absolute bottom-0 m-2">
+          made with...<br />
+          <span class="ml-4">
+            codemirror:
+            <a
+              class="hover:underline"
+              target="_blank"
+              href="https://codemirror.net/"
+              >https://codemirror.net/</a
+            >
+          </span>
           <br />
-          <div class="m-2">
-            <svg class="feather inline-block w-4 mr-2">
-              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#link" />
-            </svg>
+          <span class="ml-4">
+            feathericons:
             <a
               class="hover:underline"
               target="_blank"
-              href="https://ziglang.org"
-              >https://ziglang.org</a
+              href="https://feathericons.com/"
+              >https://feathericons.com/</a
             >
-          </div>
-          <div class="m-2">
-            <svg class="feather inline-block w-4 mr-2">
-              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#book" />
-            </svg>
+          </span>
+          <br />
+          <span class="ml-4">
+            tailwindcss:
             <a
               class="hover:underline"
               target="_blank"
-              href="https://ziglang.org/documentation/0.7.1"
-              >https://ziglang.org/documentation/0.7.1</a
+              href="https://tailwindcss.com/"
+              >https://tailwindcss.com/</a
             >
-          </div>
-          <div class="m-2">
-            <svg class="feather inline-block w-4 mr-2">
-              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#github" />
-            </svg>
+          </span>
+          <br />
+          <span class="ml-4">
+            zig logos:
             <a
               class="hover:underline"
               target="_blank"
-              href="https://github.com/ziglang/zig"
-              >https://github.com/ziglang/zig</a
+              href="https://github.com/ziglang/logo"
+              >https://github.com/ziglang/logo</a
             >
-          </div>
+          </span>
+          <br />
+          <b>zig.run</b>:
+          <a
+            class="hover:underline"
+            target="_blank"
+            href="https://github.com/jlauman/zig.run"
+            >https://github.com/jlauman/zig.run</a
+          >
+          <span id="version_build" class="ml-4">build=?</span>
+          <span id="version_commit" class="ml-4">commit=?</span>
         </div>
       </div>
-      <div class="absolute bottom-0 m-2">
-        made with...<br />
-        <span class="ml-4">
-          codemirror:
-          <a
-            class="hover:underline"
-            target="_blank"
-            href="https://codemirror.net/"
-            >https://codemirror.net/</a
-          >
-        </span>
-        <br />
-        <span class="ml-4">
-          feathericons:
-          <a
-            class="hover:underline"
-            target="_blank"
-            href="https://feathericons.com/"
-            >https://feathericons.com/</a
-          >
-        </span>
-        <br />
-        <span class="ml-4">
-          tailwindcss:
-          <a
-            class="hover:underline"
-            target="_blank"
-            href="https://tailwindcss.com/"
-            >https://tailwindcss.com/</a
-          >
-        </span>
-        <br />
-        <span class="ml-4">
-          zig logos:
-          <a
-            class="hover:underline"
-            target="_blank"
-            href="https://github.com/ziglang/logo"
-            >https://github.com/ziglang/logo</a
-          >
-        </span>
-        <br />
-        <b>zig.run</b>:
-        <a
-          class="hover:underline"
-          target="_blank"
-          href="https://github.com/jlauman/zig.run"
-          >https://github.com/jlauman/zig.run</a
-        >
-        <span id="version_build" class="ml-4">build=?</span>
-        <span id="version_commit" class="ml-4">commit=?</span>
-      </div>
-    </div>
-
-    <img
-      id="ziggy"
-      class="fixed right-0 bottom-0 w-20 max-w-sm z-10"
-      style="transform: scaleX(-1)"
-      src="/lib/zig-logo-413593a/ziggy.svg"
-    />
-
-    <!-- editor -->
-    <div id="editor" class="p-2">
-      <div id="header" class="flex">
-        <svg id="editor_menu_button" class="feather svg-button">
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#menu" />
-        </svg>
-        <div class="flex flex-1 justify-center">
-          <span id="previous_example_title" title="???">
-            <svg id="previous_example_button" class="feather svg-button mr-4">
-              <use
-                xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-left"
-              />
-            </svg>
-          </span>
-          <div id="example_title" class="text-lg"></div>
-          <span id="next_example_title" title="???">
-            <svg id="next_example_button" class="feather svg-button ml-4">
-              <use
-                xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-right"
-              />
-            </svg>
-          </span>
+      <!-- example list page -->
+      <div id="examples" class="flex flex-col p-4">
+        <div class="flex flex-row">
+          <div class="flex flex-1">
+            <div class="text-md ml-8">Please select an example...</div>
+          </div>
         </div>
-        <svg id="welcome_button" class="feather svg-button">
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#home" />
-        </svg>
+        <div class="flex flex-row m-2 rounded-sm bg-white">
+          <ul id="example_list" class="m-2"></ul>
+        </div>
       </div>
 
-      <div id="tabs" class="relative flex flex-row"></div>
+      <!-- editor -->
+      <div id="editor" class="p-4">
+        <div id="header" class="flex">
+          <div class="flex flex-1 ml-8">
+            <!-- <span id="previous_example_title" title="???">
+              <svg id="previous_example_button" class="feather svg-button mr-4">
+                <use
+                  xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-left"
+                />
+              </svg>
+            </span> -->
+            <div id="example_title" class="text-lg"></div>
+            <!-- <span id="next_example_title" title="???">
+              <svg id="next_example_button" class="feather svg-button ml-4">
+                <use
+                  xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-right"
+                />
+              </svg>
+            </span> -->
+          </div>
+          <!-- <svg id="welcome_button" class="feather svg-button">
+            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#home" />
+          </svg> -->
+        </div>
 
-      <div id="args" class="relative flex flex-row">
-        <svg
-          id="run_status_circle"
-          class="feather absolute top-1.5 left-1.5 h-4/5 stop_color"
-          alt="run main"
-        >
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#circle" />
-        </svg>
-        <svg
-          id="run_status_play"
-          class="feather absolute top-1.5 left-1.5 h-4/5 hidden exec_color animate-ping"
-          alt="run main"
-        >
-          <use
-            xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle"
-          />
-        </svg>
-        <label class="ml-12">
-          <span>argv</span>
-          <input id="argv" class="px-1 text-sm" />
-        </label>
-      </div>
+        <div id="tabs" class="relative flex flex-row"></div>
 
-      <div id="source_buttons" class="">
-        <span title="run main.zig">
+        <div id="args" class="relative flex flex-row">
           <svg
-            id="run_main_button"
-            class="feather svg-button mb-2"
+            id="run_status_circle"
+            class="feather absolute top-1.5 left-1.5 h-4/5 stop_color"
             alt="run main"
           >
-            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play" />
+            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#circle" />
           </svg>
-        </span>
-        <span title="test selected file">
           <svg
-          id="test_file_button"
-          class="feather svg-button mb-2"
-          alt="test file"
-        >
-          <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#check" />
-        </svg>
-        </span>
-        <span title="format selected file">
-          <svg
-            id="format_file_button"
-            class="feather svg-button mb-2"
-            alt="format file"
+            id="run_status_play"
+            class="feather absolute top-1.5 left-1.5 h-4/5 hidden exec_color animate-ping"
+            alt="run main"
           >
             <use
-              xlink:href="/lib/feather-4.28.0/feather-sprite.svg#align-center"
+              xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle"
             />
           </svg>
-        </span>
+          <label class="ml-12">
+            <span>argv</span>
+            <input id="argv" class="px-1 text-sm" />
+          </label>
+        </div>
+
+        <div id="source_buttons" class="">
+          <span title="run main.zig">
+            <svg
+              id="run_main_button"
+              class="feather svg-button mb-2"
+              alt="run main"
+            >
+              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play" />
+            </svg>
+          </span>
+          <span title="test selected file">
+            <svg
+              id="test_file_button"
+              class="feather svg-button mb-2"
+              alt="test file"
+            >
+              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#check" />
+            </svg>
+          </span>
+          <span title="format selected file">
+            <svg
+              id="format_file_button"
+              class="feather svg-button mb-2"
+              alt="format file"
+            >
+              <use
+                xlink:href="/lib/feather-4.28.0/feather-sprite.svg#align-center"
+              />
+            </svg>
+          </span>
+        </div>
+
+        <div
+          id="source_panel"
+          class="overflow-scroll border-l-2 border-r-2 border-b-2 border-gray-400"
+        ></div>
+
+        <div
+          id="output_panel"
+          class="overflow-scroll border-l-2 border-r-2 border-b-2 border-gray-400"
+        ></div>
       </div>
-
-      <div
-        id="source_panel"
-        class="overflow-scroll border-l-2 border-r-2 border-b-2 border-gray-400"
-      ></div>
-
-      <div
-        id="output_panel"
-        class="overflow-scroll border-l-2 border-r-2 border-b-2 border-gray-400"
-      ></div>
     </div>
+    <!-- </div> -->
   </body>
 </html>

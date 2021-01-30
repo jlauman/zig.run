@@ -14,10 +14,11 @@ async function main() {
   await editor.loadExamples();
 
   const handler = function () {
+    window.scrollTo(0,0);
     const exampleName = getDocumentFragment();
     if (exampleName) {
       editor.loadExample(exampleName);
-      editor.closeDropDowns();
+      editor.closeDropDowns1();
     } else {
       editor.openDropDowns();
     }
@@ -27,6 +28,7 @@ async function main() {
   if (exampleName) handler();
 
   window.addEventListener('hashchange', handler, false);
+  window.scrollTo(0,0);
 }
 
 function getDocumentFragment() {
@@ -146,26 +148,51 @@ class Editor {
     }
   }
 
-  closeDropDowns() {
-    const elts = [
-      document.getElementById('examples'),
-      document.getElementById('welcome'),
-    ];
-    for (const elt of elts) {
-      elt.classList.remove('translate-y-0');
-      elt.classList.add('-translate-y-full');
-    }
+  closeDropDowns2() {
+    const el = document.getElementById('slide');
+    el.classList.remove('page-0');
+    el.classList.remove('page-1');
+    el.classList.add('page-2');
+    // const elts = [
+    //   document.getElementById('examples'),
+    //   document.getElementById('welcome'),
+    // ];
+    // for (const elt of elts) {
+    //   elt.classList.remove('translate-y-0');
+    //   elt.classList.add('-translate-y-full');
+    // }
+  }
+
+  closeDropDowns1() {
+    const el = document.getElementById('slide');
+    el.classList.remove('page-0');
+    el.classList.remove('page-2');
+    el.classList.add('page-1');
+    // const elts = [
+    //   document.getElementById('examples'),
+    //   document.getElementById('welcome'),
+    // ];
+    // for (const elt of elts) {
+    //   elt.classList.remove('translate-y-0');
+    //   elt.classList.add('-translate-y-full');
+    // }
   }
 
   openDropDowns() {
-    const elts = [
-      document.getElementById('examples'),
-      document.getElementById('welcome'),
-    ];
-    for (const elt of elts) {
-      elt.classList.remove('-translate-y-full');
-      elt.classList.add('translate-y-0');
-    }
+    const el = document.getElementById('slide');
+    el.classList.remove('page-2');
+    el.classList.remove('page-1');
+    el.classList.add('page-0');
+
+    // setTimeout(() => window.scrollTo(0,0), 100);
+    // const elts = [
+    //   document.getElementById('examples'),
+    //   document.getElementById('welcome'),
+    // ];
+    // for (const elt of elts) {
+    //   elt.classList.remove('-translate-y-full');
+    //   elt.classList.add('translate-y-0');
+    // }
   }
 
   documentClickListener(event) {
@@ -175,7 +202,31 @@ class Editor {
     if (target.tagName.toLowerCase() === 'use') {
       target = target.parentElement;
     }
-    // console.log('documentClickListener: target=', target);
+    console.log('documentClickListener: target=', target);
+
+    if (target.id === 'slide_left_button') {
+      const el = document.getElementById('slide');
+      if (el.classList.contains('page-0')) {
+        el.classList.remove('page-0');
+        el.classList.add('page-1');
+      } else if (el.classList.contains('page-1')) {
+        el.classList.remove('page-1');
+        el.classList.add('page-2');
+      }
+      return;
+    }
+
+    if (target.id === 'slide_right_button') {
+      const el = document.getElementById('slide');
+      if (el.classList.contains('page-2')) {
+        el.classList.remove('page-2');
+        el.classList.add('page-1');
+      } else if (el.classList.contains('page-1')) {
+        el.classList.remove('page-1');
+        el.classList.add('page-0');
+      }
+      return;
+    }
 
     if (target.classList.contains('tab')) {
       const fileName = target.dataset.file_name;
@@ -184,11 +235,13 @@ class Editor {
     }
 
     if (target.id == 'run_main_button') {
+      this.closeDropDowns2();
       this.command('run');
       return;
     }
 
     if (target.id === 'test_file_button') {
+      this.closeDropDowns2();
       this.command('test');
       return;
     }
@@ -199,47 +252,47 @@ class Editor {
     }
 
     if (target.id === 'examples_menu_button') {
-      this.closeDropDowns();
+      this.closeDropDowns1();
       return;
     }
 
-    if (target.id === 'previous_example_button') {
-      const fragment = getDocumentFragment();
-      let last = null;
-      for (let example of this.examples) {
-        if (fragment === example.name && last != null) {
-          document.location = `#${last.name}`;
-          break;
-        }
-        last = example;
-      }
-      return;
-    }
+    // if (target.id === 'previous_example_button') {
+    //   const fragment = getDocumentFragment();
+    //   let last = null;
+    //   for (let example of this.examples) {
+    //     if (fragment === example.name && last != null) {
+    //       document.location = `#${last.name}`;
+    //       break;
+    //     }
+    //     last = example;
+    //   }
+    //   return;
+    // }
 
-    if (target.id === 'next_example_button') {
-      const fragment = getDocumentFragment();
-      let last = null;
-      for (let example of this.examples) {
-        if (last) {
-          document.location = `#${example.name}`;
-          break;
-        }
-        if (fragment === example.name) last = example;
-      }
-      return;
-    }
+    // if (target.id === 'next_example_button') {
+    //   const fragment = getDocumentFragment();
+    //   let last = null;
+    //   for (let example of this.examples) {
+    //     if (last) {
+    //       document.location = `#${example.name}`;
+    //       break;
+    //     }
+    //     if (fragment === example.name) last = example;
+    //   }
+    //   return;
+    // }
 
     if (target.id === 'editor_menu_button') {
       const elt = document.getElementById('examples');
-      elt.classList.add('translate-y-0');
-      elt.classList.remove('-translate-y-full');
+      // elt.classList.add('translate-y-0');
+      // elt.classList.remove('-translate-y-full');
       return;
     }
 
-    if (target.id === 'welcome_button') {
-      this.openDropDowns();
-      return;
-    }
+    // if (target.id === 'welcome_button') {
+    //   this.openDropDowns();
+    //   return;
+    // }
 
     if (target.classList.contains('example_name')) {
       const exampleName = target.dataset.example_name;
@@ -304,17 +357,17 @@ class Editor {
       if (example.name === name) {
         document.getElementById('example_title').textContent = example.title;
         // previous example button
-        const prev_el = document.getElementById('previous_example_title');
-        prev_el.classList.remove('hidden');
-        if (i > 0) {
-          prev_el.title = this.examples[i - 1].title;
-        } else prev_el.classList.add('hidden');
+        // const prev_el = document.getElementById('previous_example_title');
+        // prev_el.classList.remove('hidden');
+        // if (i > 0) {
+        //   prev_el.title = this.examples[i - 1].title;
+        // } else prev_el.classList.add('hidden');
         // next example button
-        const next_el = document.getElementById('next_example_title');
-        next_el.classList.remove('hidden');
-        if (i < this.examples.length - 1) {
-          next_el.title = this.examples[i + 1].title;
-        } else next_el.classList.add('hidden');
+        // const next_el = document.getElementById('next_example_title');
+        // next_el.classList.remove('hidden');
+        // if (i < this.examples.length - 1) {
+        //   next_el.title = this.examples[i + 1].title;
+        // } else next_el.classList.add('hidden');
         break;
       }
     }
