@@ -21,8 +21,9 @@
 //!
 const std = @import("std");
 
-// press the triangular button on the left to execute
-// "zig run main.zig" in the code playground.
+/// Press the triangular button on the left to execute
+/// "zig run main.zig" in the code playground.
+/// Select the `main.zig` tab to display the top-level doc comments.
 pub fn main() !void {
     std.debug.print("hello, world!\n", .{});
 }
