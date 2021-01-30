@@ -40,7 +40,7 @@ pub fn main() !void {
 
     const src_path = try util.resolveSrcPath(allocator, exe_path);
     defer allocator.free(src_path);
-    try stderr.print("file.cgi: src_path={}\n", .{src_path});
+    // try stderr.print("file.cgi: src_path={}\n", .{src_path});
     std.fs.cwd().access(src_path, .{ .read = true }) catch |err| {
         try stdout.print("Status: 400 Bad Request\n\n", .{});
         return;
@@ -56,7 +56,7 @@ pub fn main() !void {
 
     var opt_example_name: ?[]const u8 = null;
     const opt_req_uri = env_map.get("REQUEST_URI");
-    try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
+    // try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
     if (opt_req_uri) |request_uri| {
         const prefix = "/bin/file.cgi?name=";
         if (std.mem.startsWith(u8, request_uri, prefix)) {

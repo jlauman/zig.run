@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Tooltips to run, test, and format buttons.
 - Two examples and updated others.
 - Ctrl-/ line comment behavior to codemirror.
+- Example caching to reduce network requests.
 ### Changed
 - Example run state indicator color.
 - Sliding half-screen layout for views.

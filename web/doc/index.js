@@ -63,7 +63,6 @@ class Editor {
   constructor() {
     this._fileName = null;
     this._sourceFiles = [];
-    this._sourceMarks = [];
     this._sourceCodeMirror = this.constructSourceCodeMirror();
     this._outputCodeMirror = this.constructOutputCodeMirror();
     document.addEventListener('click', this.documentClickListener.bind(this));
@@ -286,11 +285,8 @@ class Editor {
     }
     this._fileName = null;
     this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
-    // request file archive from server
-    let response = await fetch(`/bin/file.cgi?name=${example.name}`, {
-      headers: { 'Content-Type': 'text/plain' },
-    });
-    let text = await response.text();
+    // get example archive (may be from cache) and parse it
+    const text = await this.fetchExampleArchive(example);
     const parts = text.split('//@file_name=').map((s) => s.trim());
     for (let part of parts) {
       if (part.length == 0) continue;
@@ -421,6 +417,21 @@ class Editor {
       el1.classList.add('stop_color');
       el2.classList.add('hidden');
     }
+  }
+
+  async fetchExampleArchive(example) {
+    // console.log('fetchExampleArchive: example=', example);
+    let archive = '';
+    if (example.archive) {
+      archive = example.archive;
+    } else {
+      let response = await fetch(`/bin/file.cgi?name=${example.name}`, {
+        headers: { 'Content-Type': 'text/plain' },
+      });
+      archive = await response.text();
+      example.archive = archive;
+    }
+    return archive;
   }
 
   async command(command) {

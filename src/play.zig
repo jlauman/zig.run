@@ -60,12 +60,27 @@ pub fn main() !void {
     const request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
     defer std.json.parseFree(RequestResponse, request, .{ .allocator = allocator });
 
+    var command: []const u8 = undefined;
+    if (mem.eql(u8, request.command, "run")) {
+        command = "run";
+    } else if (mem.eql(u8, request.command, "test")) {
+        command = "test";
+    } else if (mem.eql(u8, request.command, "format")) {
+        command = "fmt";
+    } else {
+        try stdout.print("Status: 400 Bad Request\n\n", .{});
+        try stdout.print("\n", .{});
+        try stdout.print("command={}\n", .{request.command});
+        return;
+    }
+    try stderr.print("play.cgi: command={}\n", .{command});
+    
     // use millisecond timestamp to ensure unique source file path
     var ts_buffer: [24]u8 = undefined;
     const ts = try std.fmt.bufPrint(&ts_buffer, "{}", .{std.time.milliTimestamp()});
     const ts_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts });
     defer allocator.free(ts_path);
-    try stderr.print("play.cgi: ts_path={}\n", .{ts_path});
+    // try stderr.print("play.cgi: ts_path={}\n", .{ts_path});
     try std.os.mkdir(ts_path, 0o755);
 
     // create zig file for compile step
@@ -90,20 +105,6 @@ pub fn main() !void {
     }
     if (file) |f| f.close();
 
-    var command: []const u8 = undefined;
-    if (mem.eql(u8, request.command, "run")) {
-        command = "run";
-    } else if (mem.eql(u8, request.command, "test")) {
-        command = "test";
-    } else if (mem.eql(u8, request.command, "format")) {
-        command = "fmt";
-    } else {
-        try stdout.print("Status: 400 Bad Request\n\n", .{});
-        try stdout.print("\n", .{});
-        try stdout.print("command={}\n", .{request.command});
-        return;
-    }
-
     var file_name: []const u8 = undefined;
     if (mem.eql(u8, command, "run")) {
         file_name = "main.zig";
@@ -117,7 +118,7 @@ pub fn main() !void {
     try argv_list.append(command);
     try argv_list.append(file_name);
 
-    try stderr.print("play.cgi: request.argv.len={}\n", .{request.argv.len});
+    // try stderr.print("play.cgi: request.argv.len={}\n", .{request.argv.len});
     if (mem.eql(u8, command, "run") and request.argv.len > 0) {
         try argv_list.append("--");
         var it = std.mem.split(request.argv, " ");
