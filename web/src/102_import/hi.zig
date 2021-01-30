@@ -1,7 +1,7 @@
 //! an informal greeting
 //!
 //! see: https://ziglang.org/documentation/0.7.1/#Functions
-//! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/fmt.zig#L1249-L1253
+//! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/fmt.zig#L1249
 //!
 const std = @import("std");
 

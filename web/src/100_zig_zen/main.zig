@@ -14,8 +14,15 @@
 //! * Memory is a resource.
 //! * Together we serve the users.
 //!
+//!
+//! see: https://zig.run/#101_std_debug_print
+//! see: https://zig.run/#102_import
+//! see: https://zig.run/#103_test
+//!
 const std = @import("std");
 
+// press the triangular button on the left to execute
+// "zig run main.zig" in the code playground.
 pub fn main() !void {
     std.debug.print("hello, world!\n", .{});
 }

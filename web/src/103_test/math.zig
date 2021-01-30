@@ -11,6 +11,8 @@ pub fn sub(a: u8, b: u8) u8 {
     return a - b;
 }
 
+// press the checkmark button on the left to execute
+// "zig test main.zig" in the code playground.
 test "add" {
     const expected: u8 = 8;
     expectEqual(expected, add(5, 3));

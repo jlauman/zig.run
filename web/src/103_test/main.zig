@@ -21,7 +21,7 @@ const print = std.debug.print;
 const expect = std.testing.expect;
 const expectEqual = std.testing.expectEqual;
 
-// global variables
+// global variable
 var everything: u8 = 42;
 
 pub fn main() !void {
@@ -29,6 +29,8 @@ pub fn main() !void {
     print("use zig test command.", .{});
 }
 
+// press the checkmark button on the left to execute
+// "zig test main.zig" in the code playground.
 test "std.builtin.is_test" {
     expect(std.builtin.is_test);
 }

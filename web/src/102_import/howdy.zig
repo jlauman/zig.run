@@ -1,6 +1,6 @@
 //! a cowboy greeting
 //!
-//! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/fmt.zig#L1249-L1253
+//! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/fmt.zig#L1249
 //!
 const std = @import("std");
 
