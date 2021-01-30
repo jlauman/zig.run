@@ -54,6 +54,11 @@ pub fn main() !void {
     //     try stderr.print("file.cgi: key={}, value={}\n", .{ entry.key, entry.value });
     // }
 
+    var remote_ip = env_map.get("REMOTE_ADDR");
+    if (remote_ip == null) {
+        remote_ip = "?";
+    }
+
     var opt_example_name: ?[]const u8 = null;
     const opt_req_uri = env_map.get("REQUEST_URI");
     // try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
@@ -69,12 +74,12 @@ pub fn main() !void {
             }
         }
     }
-    try stderr.print("file.cgi: example_name={}\n", .{opt_example_name});
+    try stderr.print("file.cgi: remote_ip={}, example_name={}\n", .{remote_ip.?, opt_example_name});
 
     if (opt_example_name) |example_name| {
         const example_path = try util.resolveExamplePath(allocator, exe_path, example_name);
         defer allocator.free(example_path);
-        try stderr.print("file.cgi: example_path={}\n", .{example_path});
+        try stderr.print("file.cgi: remote_ip={}, example_path={}\n", .{remote_ip.?, example_path});
         std.fs.cwd().access(example_path, .{ .read = true }) catch |err| {
             try stdout.print("Status: 400 Bad Request\n\n", .{});
             return;

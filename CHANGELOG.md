@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Example run state indicator color.
 - Sliding half-screen layout for views.
 - Reordered examples.
+- CGI stderr output for logging.
 ### Fixed
 - Zig-orange color in CSS.
 

@@ -38,6 +38,14 @@ pub fn main() !void {
         return;
     };
 
+    // use millisecond timestamp to ensure unique source file path
+    var ts_buffer: [24]u8 = undefined;
+    const ts = try std.fmt.bufPrint(&ts_buffer, "{}", .{std.time.milliTimestamp()});
+    const ts_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts });
+    defer allocator.free(ts_path);
+    // try stderr.print("play.cgi: ts_path={}\n", .{ts_path});
+    try std.os.mkdir(ts_path, 0o755);
+
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
@@ -46,12 +54,17 @@ pub fn main() !void {
     //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
     // }
 
+    var remote_ip = env_map.get("REMOTE_ADDR");
+    if (remote_ip == null) {
+        remote_ip = "?";
+    }
+
+    // read POST body....
     const buffer_size: usize = 16 * 1024;
     var buffer: [buffer_size]u8 = undefined;
     var count = try readStdIn(buffer[0..]);
     if (count == 0) return;
     // if (count > buffer_size) return error.StreamTooLong;
-
     var string = buffer[0..count];
     // try stderr.print("{}\n", .{string});
 
@@ -73,15 +86,7 @@ pub fn main() !void {
         try stdout.print("command={}\n", .{request.command});
         return;
     }
-    try stderr.print("play.cgi: command={}\n", .{command});
-    
-    // use millisecond timestamp to ensure unique source file path
-    var ts_buffer: [24]u8 = undefined;
-    const ts = try std.fmt.bufPrint(&ts_buffer, "{}", .{std.time.milliTimestamp()});
-    const ts_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts });
-    defer allocator.free(ts_path);
-    // try stderr.print("play.cgi: ts_path={}\n", .{ts_path});
-    try std.os.mkdir(ts_path, 0o755);
+    try stderr.print("play.cgi: remote_ip={}, session={}, command={}\n", .{remote_ip.?, ts, command});
 
     // create zig file for compile step
     // try stderr.print("{}\n", .{request.source});
@@ -96,7 +101,7 @@ pub fn main() !void {
             // try stderr.print("play.cgi: file_name={}\n", .{file_name});
             const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts, file_name });
             defer allocator.free(file_path);
-            try stderr.print("play.cgi: file_path={}\n", .{file_path});
+            try stderr.print("play.cgi: remote_ip={}, session={}, file_path={}\n", .{remote_ip.?, ts, file_path});
             file = try std.fs.cwd().createFile(file_path, .{});
         } else if (file) |f| {
             _ = try f.write(line);
