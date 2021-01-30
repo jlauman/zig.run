@@ -18,18 +18,25 @@ pub fn rot13(allocator: *Allocator, string: []const u8) ![]const u8 {
 }
 
 test "rot13 HELLO" {
-    var buffer: [64]u8 = undefined;
+    var allocator = std.testing.allocator;
+
+    const string = "HELLO"; // string literal is 0 terminated!
+    const actual1 = try rot13(allocator, string);
+    defer allocator.free(actual1);
+
+    expectEqualSlices(u8, "URYYB", actual1);
+    // std.debug.print("string={}\n", .{string});
+    // std.debug.print("acutal={}\n", .{actual});
+
+}
+
+test "rot13 URYYB" {
+    var buffer: [128]u8 = undefined;
     var fba = std.heap.FixedBufferAllocator.init(&buffer); // or buffer[0..]
     var allocator = &fba.allocator;
 
-    const hello = "HELLO"; // string literal is 0 terminated!
-    const string = try allocator.alloc(u8, hello.len);
-    std.mem.copy(u8, string, hello); 
-    defer allocator.free(string);
+    const actual2 = try rot13(allocator, "URYYB");
+    defer allocator.free(actual2);
 
-    const actual = try rot13(allocator, string);
-    defer allocator.free(actual);
-    // std.debug.print("string={}\n", .{string});
-    // std.debug.print("acutal={}\n", .{actual});
-    expectEqualSlices(u8, actual, "URYYB");
+    expectEqualSlices(u8, "HELLO", actual2);
 }
