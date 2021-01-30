@@ -83,6 +83,9 @@ class Editor {
           const spaces = Array(cm.getOption('indentUnit') + 1).join(' ');
           cm.replaceSelection(spaces, 'end', '+input');
         },
+        'Ctrl-/': function (cm) {
+          cm.execCommand('toggleComment');
+        },
       },
     });
   }
@@ -177,7 +180,7 @@ class Editor {
     if (target.tagName.toLowerCase() === 'use') {
       target = target.parentElement;
     }
-    console.log('documentClickListener: target=', target);
+    // console.log('documentClickListener: target=', target);
 
     if (target.id === 'slide_left_button') {
       const el = document.getElementById('slide');
