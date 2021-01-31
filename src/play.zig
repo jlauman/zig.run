@@ -49,10 +49,10 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    // var env_it = env_map.iterator();
-    // while (env_it.next()) |entry| {
-    //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
-    // }
+    var env_it = env_map.iterator();
+    while (env_it.next()) |entry| {
+        try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
+    }
 
     var remote_ip = env_map.get("REMOTE_ADDR");
     if (remote_ip == null) {

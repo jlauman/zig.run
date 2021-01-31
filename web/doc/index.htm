@@ -4,29 +4,30 @@
     <title>zig.run</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/lib/codemirror-5.58.3/codemirror.css" />
-    <link rel="stylesheet" href="/lib/codemirror-5.58.3/darcula.css" />
-    <link rel="stylesheet" href="/lib/feather-4.28.0/feather.css" />
-    <link rel="stylesheet" href="/index_tailwind.css" />
-    <link rel="stylesheet" href="/index.css" />
-    <script src="/lib/codemirror-5.58.3/codemirror.js" defer></script>
-    <script src="/lib/codemirror-5.58.3/addon/overlay.js" defer></script>
-    <script src="/lib/codemirror-5.58.3/addon/comment.js" defer></script>
-    <!-- <script src="/lib/codemirror-5.58.3/addon/continuecomment.js" defer></script> -->
-    <script src="/lib/codemirror-5.58.3/mode/zig.js" defer></script>
-    <script src="/version.js"></script>
-    <script src="/index.js" defer></script>
+    <!-- DO NOT USE ABSOLUTE PATH AS IT WILL BREAK ROUTING IN NGINX -->
+    <link rel="stylesheet" href="./lib/codemirror-5.58.3/codemirror.css" />
+    <link rel="stylesheet" href="./lib/codemirror-5.58.3/darcula.css" />
+    <link rel="stylesheet" href="./lib/feather-4.28.0/feather.css" />
+    <link rel="stylesheet" href="./index_tailwind.css" />
+    <link rel="stylesheet" href="./index.css" />
+    <script src="./lib/codemirror-5.58.3/codemirror.js" defer></script>
+    <script src="./lib/codemirror-5.58.3/addon/overlay.js" defer></script>
+    <script src="./lib/codemirror-5.58.3/addon/comment.js" defer></script>
+    <!-- <script src="./lib/codemirror-5.58.3/addon/continuecomment.js" defer></script> -->
+    <script src="./lib/codemirror-5.58.3/mode/zig.js" defer></script>
+    <script src="./version.js"></script>
+    <script src="./index.js" defer></script>
   </head>
 
   <body id="slide_container" class="bg-blue-500">
     <div class="fixed top-0 left-0 z-30" title="???">
       <svg id="slide_left_button" class="feather svg-button m-2">
-        <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-left" />
+        <use xlink:href="./lib/feather-4.28.0/feather-sprite.svg#arrow-left" />
       </svg>
     </div>
     <div class="fixed top-0 right-0 z-30" title="???">
       <svg id="slide_right_button" class="feather svg-button m-2">
-        <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#arrow-right" />
+        <use xlink:href="./lib/feather-4.28.0/feather-sprite.svg#arrow-right" />
       </svg>
     </div>
     <div id="slide" class="page-0 bg-gray-100">
@@ -46,7 +47,9 @@
             <br />
             <div class="m-2">
               <svg class="feather inline-block w-4 mr-2">
-                <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#link" />
+                <use
+                  xlink:href="./lib/feather-4.28.0/feather-sprite.svg#link"
+                />
               </svg>
               <a target="_blank" href="https://ziglang.org"
                 >https://ziglang.org</a
@@ -54,7 +57,9 @@
             </div>
             <div class="m-2">
               <svg class="feather inline-block w-4 mr-2">
-                <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#book" />
+                <use
+                  xlink:href="./lib/feather-4.28.0/feather-sprite.svg#book"
+                />
               </svg>
               <a target="_blank" href="https://ziglang.org/documentation/0.7.1"
                 >https://ziglang.org/documentation/0.7.1</a
@@ -63,7 +68,7 @@
             <div class="m-2">
               <svg class="feather inline-block w-4 mr-2">
                 <use
-                  xlink:href="/lib/feather-4.28.0/feather-sprite.svg#github"
+                  xlink:href="./lib/feather-4.28.0/feather-sprite.svg#github"
                 />
               </svg>
               <a target="_blank" href="https://github.com/ziglang/zig"
@@ -158,31 +163,19 @@
         <div id="tabs" class="relative flex flex-row"></div>
         <div id="source_buttons" class="">
           <span title="run main.zig">
-            <svg
-              id="run_main_button"
-              class="feather svg-button mb-2"
-              alt="run main"
-            >
-              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play" />
+            <svg id="run_main_button" class="feather svg-button mb-2">
+              <use xlink:href="./lib/feather-4.28.0/feather-sprite.svg#play" />
             </svg>
           </span>
           <span title="test selected file">
-            <svg
-              id="test_file_button"
-              class="feather svg-button mb-2"
-              alt="test file"
-            >
-              <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#check" />
+            <svg id="test_file_button" class="feather svg-button mb-2">
+              <use xlink:href="./lib/feather-4.28.0/feather-sprite.svg#check" />
             </svg>
           </span>
           <span title="format selected file">
-            <svg
-              id="format_file_button"
-              class="feather svg-button mb-2"
-              alt="format file"
-            >
+            <svg id="format_file_button" class="feather svg-button mb-2">
               <use
-                xlink:href="/lib/feather-4.28.0/feather-sprite.svg#align-center"
+                xlink:href="./lib/feather-4.28.0/feather-sprite.svg#align-center"
               />
             </svg>
           </span>
@@ -200,17 +193,15 @@
           <svg
             id="run_status_circle"
             class="feather absolute top-1.5 left-1.5 h-4/5 stop_color"
-            alt="run main"
           >
-            <use xlink:href="/lib/feather-4.28.0/feather-sprite.svg#circle" />
+            <use xlink:href="./lib/feather-4.28.0/feather-sprite.svg#circle" />
           </svg>
           <svg
             id="run_status_play"
             class="feather absolute top-1.5 left-1.5 h-4/5 hidden exec_color animate-ping"
-            alt="run main"
           >
             <use
-              xlink:href="/lib/feather-4.28.0/feather-sprite.svg#play-circle"
+              xlink:href="./lib/feather-4.28.0/feather-sprite.svg#play-circle"
             />
           </svg>
           <label class="ml-12">

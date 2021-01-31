@@ -264,7 +264,8 @@ class Editor {
   }
 
   async loadExamples() {
-    let response = await fetch('/bin/file.cgi', {
+    // pathname is for the /test route+container
+    let response = await fetch(`${location.pathname}bin/file.cgi`, {
       headers: { 'Content-Type': 'application/json' },
     });
     const json = await response.json();
@@ -425,7 +426,8 @@ class Editor {
     if (example.archive) {
       archive = example.archive;
     } else {
-      let response = await fetch(`/bin/file.cgi?name=${example.name}`, {
+      // pathname is for the /test route+container
+      let response = await fetch(`${location.pathname}bin/file.cgi?name=${example.name}`, {
         headers: { 'Content-Type': 'text/plain' },
       });
       archive = await response.text();
@@ -450,7 +452,8 @@ class Editor {
     const argv = document.getElementById('argv').value.trim();
     try {
       this.spinner(true);
-      let response = await fetch('/bin/play.cgi', {
+      // pathname is for the /test route+container
+      let response = await fetch(`${location.pathname}bin/play.cgi`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
