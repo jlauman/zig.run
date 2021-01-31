@@ -54,9 +54,12 @@ pub fn main() !void {
     //     try stderr.print("file.cgi: key={}, value={}\n", .{ entry.key, entry.value });
     // }
 
-    var remote_ip = env_map.get("REMOTE_ADDR");
+    var remote_ip = env_map.get("HTTP_X_REAL_IP");
     if (remote_ip == null) {
-        remote_ip = "?";
+        remote_ip = env_map.get("REMOTE_ADDR");
+        if (remote_ip == null) {
+            remote_ip = "?";
+        }
     }
 
     var opt_example_name: ?[]const u8 = null;
