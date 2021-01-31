@@ -49,14 +49,17 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    var env_it = env_map.iterator();
-    while (env_it.next()) |entry| {
-        try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
-    }
+    // var env_it = env_map.iterator();
+    // while (env_it.next()) |entry| {
+    //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
+    // }
 
-    var remote_ip = env_map.get("REMOTE_ADDR");
+    var remote_ip = env_map.get("HTTP_X_REAL_IP");
     if (remote_ip == null) {
-        remote_ip = "?";
+        remote_ip = env_map.get("REMOTE_ADDR");
+        if (remote_ip == null) {
+            remote_ip = "?";
+        }
     }
 
     // read POST body....
@@ -86,7 +89,7 @@ pub fn main() !void {
         try stdout.print("command={}\n", .{request.command});
         return;
     }
-    try stderr.print("play.cgi: remote_ip={}, session={}, command={}\n", .{remote_ip.?, ts, command});
+    try stderr.print("play.cgi: remote_ip={}, session={}, command={}\n", .{ remote_ip.?, ts, command });
 
     // create zig file for compile step
     // try stderr.print("{}\n", .{request.source});
@@ -101,7 +104,7 @@ pub fn main() !void {
             // try stderr.print("play.cgi: file_name={}\n", .{file_name});
             const file_path = try std.fs.path.joinPosix(allocator, &[_][]const u8{ tmp_path, ts, file_name });
             defer allocator.free(file_path);
-            try stderr.print("play.cgi: remote_ip={}, session={}, file_path={}\n", .{remote_ip.?, ts, file_path});
+            try stderr.print("play.cgi: remote_ip={}, session={}, file_path={}\n", .{ remote_ip.?, ts, file_path });
             file = try std.fs.cwd().createFile(file_path, .{});
         } else if (file) |f| {
             _ = try f.write(line);
