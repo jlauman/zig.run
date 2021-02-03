@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 
+## [210202] - 20210202
+### Added
+- Ability to handle examples with no main.zig file (tests only).
+### Changed
+- Removed stub main.zig files in test only examples.
+- Print formatting in some test examples.
+### Fixed
+- Slide checkbox label is now clickable.
+
+
 ## [210201] - 20210201
 ### Added
 - Code files for two more examples.

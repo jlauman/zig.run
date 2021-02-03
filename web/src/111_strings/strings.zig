@@ -13,15 +13,11 @@ const eql = std.mem.eql;
 const startsWith = std.mem.startsWith;
 const endsWith = std.mem.endsWith;
 
-pub fn main() !void {
-    print("run zig test on this file.\n", .{});
-}
-
 test "string concat at comptime" {
     const str1 = "one";
     const str2: []const u8 = "two";
     const str3 = str1 ++ " " ++ str2;
-    print("str3={}\n", .{str3});
+    print(" str3={} ", .{str3});
     expect(eql(u8, str3, "one two"));
 }
 
@@ -64,7 +60,7 @@ test "join strings" {
 
 test "iterating utf8 runes" {
     const str1: []const u8 = "こんにちは!";
-    print("str1={}\n", .{str1});
+    print(" str1={} ", .{str1});
     const view = try std.unicode.Utf8View.init(str1);
     var itr = view.iterator();
     var idx: u8 = 0;
