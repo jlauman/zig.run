@@ -120,7 +120,7 @@ pub fn main() !void {
         var it = src_dir.iterate();
         while (try it.next()) |entry| {
             if (entry.kind == .Directory) {
-                const title = try util.readMainTitle(allocator, src_path, entry.name);
+                const title = try util.readTitleFromExample(allocator, src_path, entry.name);
                 // free after json is serialized!!!
                 // try stderr.print("file.cgi: name={}\n", .{entry.name});
                 // try stderr.print("file.cgi: title={}\n", .{title});

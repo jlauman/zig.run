@@ -141,7 +141,7 @@ a:hover {
 }
 
 .stop_color {
-  stroke: #6b7280;
+  stroke: #d1d5db;
 }
 
 .exec_color {
@@ -150,4 +150,8 @@ a:hover {
 
 :hover.svg-button {
   stroke: #f7a41d;
+}
+
+.svg-button-disabled {
+  stroke: #d1d5db;
 }

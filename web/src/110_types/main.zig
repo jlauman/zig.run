@@ -1,4 +1,3 @@
-//! types
 //!
 //! see: https://ziglang.org/documentation/0.7.1/#Primitive-Types
 //! see: https://ziglang.org/documentation/0.7.1/#String-Literals-and-Character-Literals

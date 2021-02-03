@@ -1,3 +1,5 @@
+//! math overflow
+//!
 //! Integer operations that cause values to exceed the number
 //! of bits available for representation are one of the 
 //! instances of undefined behavior. Refer to the Zig documentation

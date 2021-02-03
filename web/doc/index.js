@@ -208,8 +208,11 @@ class Editor {
     }
 
     if (target.id == 'run_main_button') {
-      this.setPage(2);
-      this.command('run');
+      // ensure that the button is enabled
+      if (target.classList.contains('svg-button')) {
+        this.setPage(2);
+        this.command('run');
+      }
       return;
     }
 
@@ -303,6 +306,16 @@ class Editor {
       if (b.name === 'main.zig') return 1;
       return a.name < b.name;
     });
+    // if there is not main.zig file diable the play button
+    const mainZig = this._sourceFiles.find((a) => a.name === 'main.zig');
+    const el = document.getElementById('run_main_button');
+    if (mainZig) {
+      el.classList.remove('svg-button-disabled');
+      el.classList.add('svg-button');
+    } else {
+      el.classList.remove('svg-button');
+      el.classList.add('svg-button-disabled');
+    }
     // console.log(this._sourceFiles);
     // set example title
     this.setExampleTitle(name);
@@ -427,9 +440,12 @@ class Editor {
       archive = example.archive;
     } else {
       // pathname is for the /test route+container
-      let response = await fetch(`${location.pathname}bin/file.cgi?name=${example.name}`, {
-        headers: { 'Content-Type': 'text/plain' },
-      });
+      let response = await fetch(
+        `${location.pathname}bin/file.cgi?name=${example.name}`,
+        {
+          headers: { 'Content-Type': 'text/plain' },
+        }
+      );
       archive = await response.text();
       example.archive = archive;
     }
