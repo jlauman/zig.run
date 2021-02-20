@@ -1,6 +1,6 @@
 //! bad read file
 //!
-//! try to read a file that is visible to web server.
+//! Confirm that zig user cannot read files visible to web server.
 //!
 const std = @import("std");
 const print = std.debug.print;

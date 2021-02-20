@@ -1,6 +1,6 @@
 //! bad openDir
 //!
-//! try to read a file from the tmp folder.
+//! Confirm that tmp folder cannot be opened/iterated.
 //!
 const std = @import("std");
 const print = std.debug.print;

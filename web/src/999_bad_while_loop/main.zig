@@ -1,6 +1,6 @@
 //! bad while loop
 //!
-//! try to consume cpu in a tight loop.
+//! Confirm that cron script kills runaway examples.
 //!
 const std = @import("std");
 const print = std.debug.print;
