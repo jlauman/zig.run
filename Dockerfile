@@ -11,7 +11,7 @@ RUN apk add --no-cache iproute2 procps xz lighttpd &&\
 RUN adduser -D -h /home/web -s /bin/sh web &&\
     mkdir /home/web/tmp &&\
     chown -R web.web /home/web &&\
-    adduser zig -D -H
+    adduser zig -D -h /home/web
 
 ENV PATH="/usr/local/zig:$PATH"
 
@@ -27,6 +27,7 @@ RUN chmod 440 /app/*.conf &&\
     chmod -R o-rwx /home/web/bin /home/web/tmp &&\
     chmod -R go-rwx /home/web/doc /home/web/src &&\
     chown -R zig.web /home/web/tmp &&\
+    chmod 330 /home/web/tmp &&\
     mkdir /home/web/.cache &&\
     chown zig.zig /home/web/.cache &&\
     chown zig.zig /home/web/bin/play.cgi &&\
