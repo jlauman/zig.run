@@ -300,10 +300,13 @@ class Editor {
       let docs = '';
       this._sourceFiles.push({ name, code, docs });
     }
-    // ensure main.zig is first source file
+    // ensure main.zig is first source file, or
+    // test.zig is first source file
     this._sourceFiles.sort((a, b) => {
       if (a.name === 'main.zig') return -1;
       if (b.name === 'main.zig') return 1;
+      if (a.name === 'test.zig') return -1;
+      if (b.name === 'test.zig') return 1;
       return a.name < b.name;
     });
     // if there is not main.zig file diable the play button

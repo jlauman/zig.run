@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Example to test openDir on /home/web/tmp folder.
 ### Changed
 - Prevent Zig openDir on /home/web/tmp folder.
+- Title lookup from Zig source files - check test.zig after main.zig.
 ### Fixed
 
 

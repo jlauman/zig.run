@@ -31,35 +31,42 @@ pub fn resolveExamplePath(allocator: *Allocator, exe_path: []const u8, example_n
 }
 
 pub fn readTitleFromExample(allocator: *Allocator, src_path: []const u8, example_name: []const u8) ![]const u8 {
+    // read title from main.zig file
     const main_zig_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name, "main.zig" });
     defer allocator.free(main_zig_path);
     const file = std.fs.openFileAbsolute(main_zig_path, .{ .read = true }) catch {
-        // no main.zig file... use first zig file
-        const example_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name });
-        defer allocator.free(example_path);
-        var example_dir = try std.fs.cwd().openDir(example_path, .{ .iterate = true });
-        defer example_dir.close();
-        var file_name_opt: ?[]const u8 = null;
-        var it = example_dir.iterate();
-        while (try it.next()) |entry| {
-            if (entry.kind == .File and std.mem.endsWith(u8, entry.name, ".zig")) {
-                file_name_opt = entry.name;
-                break;
+        // read title from test.zig file
+        const test_zig_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name, "test.zig" });
+        defer allocator.free(test_zig_path);
+        const file = std.fs.openFileAbsolute(test_zig_path, .{ .read = true }) catch {
+            // read title from first zig file
+            const example_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name });
+            defer allocator.free(example_path);
+            var example_dir = try std.fs.cwd().openDir(example_path, .{ .iterate = true });
+            defer example_dir.close();
+            var file_name_opt: ?[]const u8 = null;
+            var it = example_dir.iterate();
+            while (try it.next()) |entry| {
+                if (entry.kind == .File and std.mem.endsWith(u8, entry.name, ".zig")) {
+                    file_name_opt = entry.name;
+                    break;
+                }
             }
-        }
-        if (file_name_opt) |file_name| {
-            // std.debug.print("util.cgi: first zig file_name={}\n", .{file_name});
-            const file_zig_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name, file_name });
-            defer allocator.free(file_zig_path);
-            // std.debug.print("util.cgi: first zig file_zig_path={}\n", .{file_zig_path});
-            const file = try std.fs.openFileAbsolute(file_zig_path, .{ .read = true });
-            defer file.close();
-            return try readTitleFromFile(allocator, file, example_name);
-        }
-        return try readTitleFromFile(allocator, null, example_name);
+            if (file_name_opt) |file_name| {
+                // std.debug.print("util.cgi: first zig file_name={}\n", .{file_name});
+                const file_zig_path = try std.fs.path.resolve(allocator, &[_][]const u8{ src_path, example_name, file_name });
+                defer allocator.free(file_zig_path);
+                // std.debug.print("util.cgi: first zig file_zig_path={}\n", .{file_zig_path});
+                const file = try std.fs.openFileAbsolute(file_zig_path, .{ .read = true });
+                defer file.close();
+                return try readTitleFromFile(allocator, file, example_name);
+            }
+            return try readTitleFromFile(allocator, null, example_name);
+        };
+        defer file.close();
+        return try readTitleFromFile(allocator, file, example_name);
     };
     defer file.close();
-
     return try readTitleFromFile(allocator, file, example_name);
 }
 
