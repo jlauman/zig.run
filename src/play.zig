@@ -49,10 +49,10 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    // var env_it = env_map.iterator();
-    // while (env_it.next()) |entry| {
-    //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
-    // }
+    var env_it = env_map.iterator();
+    while (env_it.next()) |entry| {
+        try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
+    }
 
     var remote_ip = env_map.get("HTTP_X_REAL_IP");
     if (remote_ip == null) {
@@ -62,18 +62,61 @@ pub fn main() !void {
         }
     }
 
-    // read POST body....
+    // parse http query parameter or request body into a Request struct
     const buffer_size: usize = 16 * 1024;
-    var buffer: [buffer_size]u8 = undefined;
-    var count = try readStdIn(buffer[0..]);
-    if (count == 0) return;
-    // if (count > buffer_size) return error.StreamTooLong;
-    var string = buffer[0..count];
-    // try stderr.print("{}\n", .{string});
+    var request: RequestResponse = undefined;
+    var method_opt = env_map.get("REQUEST_METHOD");
+    if (method_opt) |method| {
+        if (mem.eql(u8, "GET", method)) {
+            var query_string = env_map.get("QUERY_STRING") orelse return error.Broken;
+            if (mem.startsWith(u8, query_string, "base64=")) {
+                var encoded = query_string[7..];
+                try stderr.print("play.cgi: encoded={}\n", .{encoded});
+                const decoder = std.base64.standard_decoder;
+                var base64_buffer: [buffer_size]u8 = undefined;
+                var decoded = base64_buffer[0..try decoder.calcSize(encoded)];
+                try decoder.decode(decoded, encoded);
+                try stderr.print("play.cgi: decoded={}\n", .{decoded});
 
-    // parse http request body into a Request struct
-    var stream = std.json.TokenStream.init(string);
-    const request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
+                var output: [buffer_size]u8 = undefined;
+                var fba = std.heap.FixedBufferAllocator.init(&output);
+                var string1 = std.ArrayList(u8).init(&fba.allocator);
+                try std.json.stringify(decoded, .{}, string1.writer());
+                try stderr.print("play.cgi: string={}\n", .{string1.items});
+
+                const t1 =
+                    \\{"command":"run","file_name":"","source":"//@file_name=main.zig\n
+                ;
+                const t2 =
+                    \\,"argv":"","stderr":"","stdout":""};
+                ;
+                const string2 = try std.mem.join(allocator, "", &[_][]const u8{ t1, string1.items[1..], t2 });
+                defer allocator.free(string2);
+                try stderr.print("play.cgi: string={}\n", .{string2});
+                var stream = std.json.TokenStream.init(string2);
+                request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
+            }
+        } else if (mem.eql(u8, "POST", method)) {
+            var buffer: [buffer_size]u8 = undefined;
+            var count = try readStdIn(buffer[0..]);
+            if (count == 0) return;
+            // if (count > buffer_size) return error.StreamTooLong;
+            var string = buffer[0..count];
+            // try stderr.print("{}\n", .{string});
+            var stream = std.json.TokenStream.init(string);
+            request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
+        } else {
+            try stdout.print("Status: 400 Bad Request\n\n", .{});
+            try stdout.print("\n", .{});
+            try stdout.print("method={}\n", .{method});
+            return;
+        }
+    } else {
+        try stdout.print("Status: 400 Bad Request\n\n", .{});
+        try stdout.print("\n", .{});
+        try stdout.print("no method\n", .{});
+        return;
+    }
     defer std.json.parseFree(RequestResponse, request, .{ .allocator = allocator });
 
     var command: []const u8 = undefined;
