@@ -49,10 +49,10 @@ pub fn main() !void {
     var env_map = try process.getEnvMap(allocator);
     defer env_map.deinit();
 
-    var env_it = env_map.iterator();
-    while (env_it.next()) |entry| {
-        try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
-    }
+    // var env_it = env_map.iterator();
+    // while (env_it.next()) |entry| {
+    //     try stderr.print("play.cgi: key={}, value={}\n", .{ entry.key, entry.value });
+    // }
 
     var remote_ip = env_map.get("HTTP_X_REAL_IP");
     if (remote_ip == null) {
@@ -71,29 +71,30 @@ pub fn main() !void {
             var query_string = env_map.get("QUERY_STRING") orelse return error.Broken;
             if (mem.startsWith(u8, query_string, "base64=")) {
                 var encoded = query_string[7..];
-                try stderr.print("play.cgi: encoded={}\n", .{encoded});
+                // try stderr.print("play.cgi: encoded={}\n", .{encoded});
                 const decoder = std.base64.standard_decoder;
                 var base64_buffer: [buffer_size]u8 = undefined;
                 var decoded = base64_buffer[0..try decoder.calcSize(encoded)];
                 try decoder.decode(decoded, encoded);
-                try stderr.print("play.cgi: decoded={}\n", .{decoded});
+                // try stderr.print("play.cgi: decoded={}\n", .{decoded});
 
-                var output: [buffer_size]u8 = undefined;
-                var fba = std.heap.FixedBufferAllocator.init(&output);
-                var string1 = std.ArrayList(u8).init(&fba.allocator);
-                try std.json.stringify(decoded, .{}, string1.writer());
-                try stderr.print("play.cgi: string={}\n", .{string1.items});
+                var json_str = std.ArrayList(u8).init(allocator);
+                defer json_str.deinit();
+                try std.json.stringify(decoded, .{}, json_str.writer());
+                // try stderr.print("play.cgi: string={}\n", .{json_str.items});
 
-                const t1 =
-                    \\{"command":"run","file_name":"","source":"//@file_name=main.zig\n
+                const json_prefix =
+                    \\{"command":"run","file_name":"","source":"//@file_name=main.zig
                 ;
-                const t2 =
+                const json_suffix =
                     \\,"argv":"","stderr":"","stdout":""};
                 ;
-                const string2 = try std.mem.join(allocator, "", &[_][]const u8{ t1, string1.items[1..], t2 });
-                defer allocator.free(string2);
-                try stderr.print("play.cgi: string={}\n", .{string2});
-                var stream = std.json.TokenStream.init(string2);
+                try json_str.replaceRange(0, 1, "\\n");
+                try json_str.insertSlice(0, json_prefix);
+                try json_str.appendSlice(json_suffix);
+                // try stderr.print("play.cgi: string={}\n", .{json_str.items});
+
+                var stream = std.json.TokenStream.init(json_str.items);
                 request = try std.json.parse(RequestResponse, &stream, .{ .allocator = allocator });
             }
         } else if (mem.eql(u8, "POST", method)) {
