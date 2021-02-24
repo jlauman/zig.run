@@ -11,29 +11,39 @@ async function main() {
 
   const editor = new Editor();
   window.ZigRun.editor = editor;
-  await editor.loadExamples();
+  // example loaded from external source into snippet page does
+  // not have the zig page or example list page.
+  editor._isApp = document.getElementById('example_list') ? true : false;
+  if (editor._isApp) {
+    await editor.loadExamples();
 
-  const handler = function () {
-    // hack to ensure the browser's scroll is zero-ed
-    window.scrollTo(0, 0);
+    const handler = function () {
+      // hack to ensure the browser's scroll is zero-ed
+      window.scrollTo(0, 0);
+      const exampleName = getDocumentFragment();
+      const el = document.getElementById('slide');
+      if (exampleName && el.classList.contains('page-1')) {
+        editor.loadExample(exampleName);
+        const slide = document.getElementById('slide_after_select').checked;
+        if (slide) editor.setPage(2);
+      } else if (exampleName) {
+        editor.loadExample(exampleName);
+        editor.setPage(2);
+      } else {
+        editor.setPage(0);
+      }
+    };
+
     const exampleName = getDocumentFragment();
-    const el = document.getElementById('slide');
-    if (exampleName && el.classList.contains('page-1')) {
-      editor.loadExample(exampleName);
-      const slide = document.getElementById('slide_after_select').checked;
-      if (slide) editor.setPage(2);
-    } else if (exampleName) {
-      editor.loadExample(exampleName);
-      editor.setPage(2);
-    } else {
-      editor.setPage(0);
-    }
-  };
+    if (exampleName) handler();
 
-  const exampleName = getDocumentFragment();
-  if (exampleName) handler();
-
-  window.addEventListener('hashchange', handler, false);
+    window.addEventListener('hashchange', handler, false);
+  } else {
+    // snippet runner...
+    editor
+      .loadExample(document.location.hash)
+      .then((command) => editor.command(command));
+  }
   window.scrollTo(0, 0);
 }
 
@@ -61,6 +71,7 @@ function getDocumentFragment() {
 
 class Editor {
   constructor() {
+    this._isApp = true;
     this._fileName = null;
     this._sourceFiles = [];
     this._sourceCodeMirror = this.constructSourceCodeMirror();
@@ -105,8 +116,13 @@ class Editor {
             else if (state == 5 && ch == ':') state = 6;
             else if (state == 6 && ch == '/') state = 7;
             else if (state == 7 && ch == '/') state = 8;
-            else if (state == 8 && (ch == ' ' || ch == '\n')) return 'link';
-            else if (state == 8 && stream.eol()) return 'link';
+            else if (
+              state == 8 &&
+              (ch == ' ' || ch == '"' || ch == "'" || ch == '\n')
+            ) {
+              stream.backUp(1);
+              return 'link';
+            } else if (state == 8 && stream.eol()) return 'link';
             else if (state == 8) state = state;
             else return null;
             ch = stream.next();
@@ -157,18 +173,21 @@ class Editor {
   }
 
   setPage(number) {
-    if (number > -1 && number < 3) {
-      const el = document.getElementById('slide');
-      for (let i = 0; i < 3; i++) el.classList.remove(`page-${i}`);
-      el.classList.add(`page-${number}`);
-      const slb_el = document.getElementById('slide_left_button');
-      const srb_el = document.getElementById('slide_right_button');
-      if (number == 0) slb_el.classList.add('hidden');
-      else slb_el.classList.remove('hidden');
-      if (number == 2) srb_el.classList.add('hidden');
-      else srb_el.classList.remove('hidden');
-    } else {
-      throw new Error(`invalid page number=${number}`);
+    // snippet runner does not have page slide.
+    if (this._isApp) {
+      if (number > -1 && number < 3) {
+        const el = document.getElementById('slide');
+        for (let i = 0; i < 3; i++) el.classList.remove(`page-${i}`);
+        el.classList.add(`page-${number}`);
+        const slb_el = document.getElementById('slide_left_button');
+        const srb_el = document.getElementById('slide_right_button');
+        if (number == 0) slb_el.classList.add('hidden');
+        else slb_el.classList.remove('hidden');
+        if (number == 2) srb_el.classList.add('hidden');
+        else srb_el.classList.remove('hidden');
+      } else {
+        throw new Error(`invalid page number=${number}`);
+      }
     }
   }
 
@@ -227,6 +246,16 @@ class Editor {
       return;
     }
 
+    if (target.id === 'create_link_button') {
+      this.createLinkButton();
+      return;
+    }
+
+    if (target.id === 'create_embed_code') {
+      this.createEmbedCode();
+      return;
+    }
+
     if (target.id === 'examples_menu_button') {
       this.setPage(1);
       return;
@@ -267,8 +296,7 @@ class Editor {
   }
 
   async loadExamples() {
-    // pathname is for the /test route+container
-    let response = await fetch(`${location.pathname}example`, {
+    let response = await fetch('/example', {
       headers: { 'Content-Type': 'application/json' },
     });
     const json = await response.json();
@@ -279,36 +307,48 @@ class Editor {
 
   async loadExample(name) {
     console.log('Editor.loadExample: name=', name);
-    let example = this.examples.find((e) => e.name == name);
-    console.log('loadExample: example=', example);
-    if (!example) {
-      document.getElementById(
-        'example_title'
-      ).textContent = `NO EXAMPLE WITH NAME ${name}`;
-      return;
+    let command = 'run';
+    if (name && name.startsWith('#')) {
+      // script runner...
+      const code = atob(name.substring(1));
+      const match = code.match(/^\/\/\! (.*)\n/);
+      const title = Array.isArray(match) ? match[1] : 'Snippet';
+      this._sourceFiles.push({ name: 'main.zig', code, docs: '' });
+      this.examples = [{ title, name: 'snippet' }];
+      command = code.includes('\ntest ') ? 'test' : 'run';
+      name = 'snippet'; // change argument value
+    } else {
+      let example = this.examples.find((e) => e.name == name);
+      console.log('loadExample: example=', example);
+      if (!example) {
+        document.getElementById(
+          'example_title'
+        ).textContent = `NO EXAMPLE WITH NAME ${name}`;
+        return;
+      }
+      this._fileName = null;
+      this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
+      // get example archive (may be from cache) and parse it
+      const text = await this.fetchExampleArchive(example);
+      const parts = text.split('//@file_name=').map((s) => s.trim());
+      for (let part of parts) {
+        if (part.length == 0) continue;
+        let i = part.indexOf('\n');
+        let name = part.substring(0, i);
+        let code = part.substring(i).trim();
+        let docs = '';
+        this._sourceFiles.push({ name, code, docs });
+      }
+      // ensure main.zig is first source file, or
+      // test.zig is first source file
+      this._sourceFiles.sort((a, b) => {
+        if (a.name === 'main.zig') return -1;
+        if (b.name === 'main.zig') return 1;
+        if (a.name === 'test.zig') return -1;
+        if (b.name === 'test.zig') return 1;
+        return a.name < b.name;
+      });
     }
-    this._fileName = null;
-    this._sourceFiles.splice(0, this._sourceFiles.length); // clear _sourceFiles
-    // get example archive (may be from cache) and parse it
-    const text = await this.fetchExampleArchive(example);
-    const parts = text.split('//@file_name=').map((s) => s.trim());
-    for (let part of parts) {
-      if (part.length == 0) continue;
-      let i = part.indexOf('\n');
-      let name = part.substring(0, i);
-      let code = part.substring(i).trim();
-      let docs = '';
-      this._sourceFiles.push({ name, code, docs });
-    }
-    // ensure main.zig is first source file, or
-    // test.zig is first source file
-    this._sourceFiles.sort((a, b) => {
-      if (a.name === 'main.zig') return -1;
-      if (b.name === 'main.zig') return 1;
-      if (a.name === 'test.zig') return -1;
-      if (b.name === 'test.zig') return 1;
-      return a.name < b.name;
-    });
     // if there is not main.zig file diable the play button
     const mainZig = this._sourceFiles.find((a) => a.name === 'main.zig');
     const el = document.getElementById('run_main_button');
@@ -321,9 +361,12 @@ class Editor {
     }
     // console.log(this._sourceFiles);
     // set example title
-    this.setExampleTitle(name);
-    this.loadExampleSourceDocs();
+    if (name !== '900_snippet') {
+      this.setExampleTitle(name);
+      this.loadExampleSourceDocs();
+    }
     this.loadExampleTabs();
+    return command;
   }
 
   setExampleTitle(name) {
@@ -442,13 +485,9 @@ class Editor {
     if (example.archive) {
       archive = example.archive;
     } else {
-      // pathname is for the /test route+container
-      let response = await fetch(
-        `${location.pathname}example/${example.name}`,
-        {
-          headers: { 'Content-Type': 'text/plain' },
-        }
-      );
+      let response = await fetch(`/example/${example.name}`, {
+        headers: { 'Content-Type': 'text/plain' },
+      });
       archive = await response.text();
       example.archive = archive;
     }
@@ -472,7 +511,7 @@ class Editor {
     try {
       this.spinner(true);
       // pathname is for the /test route+container
-      let response = await fetch(`${location.pathname}play`, {
+      let response = await fetch(`/play`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -506,6 +545,39 @@ class Editor {
       this.spinner(false);
     }
   }
-}
+
+  createLinkButton() {
+    const code = this._sourceCodeMirror.getValue();
+    const match = code.match(/^\/\/\! (.*)\n/);
+    const title = Array.isArray(match) ? match[1] : 'Snippet';
+    // prettier-ignore
+    const value = `<a target="_blank" href="${location.origin}/snippet/#${btoa(code)}"><button>Run ${title}</button></a>`;
+    this._outputCodeMirror.setValue(value);
+  }
+
+  createEmbedCode() {
+    const code = this._sourceCodeMirror.getValue();
+    const match = code.match(/^\/\/\! (.*)\n/);
+    const title = Array.isArray(match) ? match[1] : 'Snippet';
+    // prettier-ignore
+    const value = `
+      <div class="zig-snippet">
+        <pre><button>RUN</button>&nbsp;<button>RESET</button><br/><br/><code class="language-zig"></code>
+        <script>
+            let url = '${location.origin}/play/base64/${btoa(code)}';
+            let zig = atob(url.split('base64/')[1]);
+            let children = Array.from(document.currentScript.parentElement.children);
+            let code = children.find((e) => e.tagName == 'CODE'); let run = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RUN'); let reset = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RESET');
+            let output = (t) => new Promise((resolve) => { code.textContent = t; resolve(); });
+            run.onclick = () => output('Running...').then(fetch(url).then(r => r.json()).then(t => output(t.stdout + '\\n----------\\n' + t.stderr)));
+            reset.onclick = () => output(zig).then(() => Prism && Prism.highlightElement(code));
+            output(zig).then(() => Prism && Prism.highlightElement(code));
+        </script>
+        </pre>
+      </div>
+    `;
+    this._outputCodeMirror.setValue(value);
+  }
+} // end Editor
 
 main().catch((err) => console.error(err));

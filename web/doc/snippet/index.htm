@@ -1,37 +1,101 @@
 <!DOCTYPE html>
-<!-- prettier-ignore -->
 <html>
-    <head>
-        <title>zig.run</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js" data-manual></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-css.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-zig.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
-        <style>
-            body { margin: 0; background-color: #999;}
-            #content { width: 100vw; height: 100vh; }
-            .zig-snippet { display: flex; justify-content: center; align-items: center; height: 100%; }
-            .zig-snippet > pre { min-width: 50vw; min-height: 50vh; }
-        </style>
-    </head>
-    <body>
-        <div id="content">
-            <div class="zig-snippet">
-                <pre><button>RUN</button>&nbsp;<button>RESET</button><br/><br/><code class="language-zig"></code>
-                <script>
-                    let url = `http://penguin.linux.test:8080/bin/play.cgi?base64=Y29uc3Qgc3RkID0gQGltcG9ydCgic3RkIik7CmNvbnN0IHByaW50ID0gc3RkLmRlYnVnLnByaW50OwoKcHViIGZuIG1haW4oKSAhdm9pZCB7CiAgICBwcmludCgie31cbiIsIC57ImhlbGxvIHdvcmxkISJ9KTsKfQo=`;
-                    let zig = atob(url.split('base64=')[1]);
-                    let children = Array.from(document.currentScript.parentElement.children);
-                    let code = children.find((e) => e.tagName == 'CODE'); let run = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RUN'); let reset = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RESET');
-                    let output = (t) => new Promise((resolve) => { code.textContent = t; resolve(); });
-                    run.onclick = () => output('Running...').then(fetch(url).then(r => r.json()).then(t => output(t.stdout + '\n----------\n' + t.stderr)));
-                    reset.onclick = () => output(zig).then(() => Prism && Prism.highlightElement(code));
-                    output(zig).then(() => Prism && Prism.highlightElement(code));
-                </script>
-                </pre>
-            </div>
+  <head>
+    <title>zig.run</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- DO NOT USE ABSOLUTE PATH AS IT WILL BREAK ROUTING IN NGINX -->
+    <link rel="stylesheet" href="../lib/codemirror-5.58.3/codemirror.css" />
+    <link rel="stylesheet" href="../lib/codemirror-5.58.3/darcula.css" />
+    <link rel="stylesheet" href="../lib/feather-4.28.0/feather.css" />
+    <link rel="stylesheet" href="../index_tailwind.css" />
+    <link rel="stylesheet" href="./index.css" />
+    <script src="../lib/codemirror-5.58.3/codemirror.js" defer></script>
+    <script src="../lib/codemirror-5.58.3/addon/overlay.js" defer></script>
+    <script src="../lib/codemirror-5.58.3/addon/comment.js" defer></script>
+    <!-- <script src="./lib/codemirror-5.58.3/addon/continuecomment.js" defer></script> -->
+    <script src="../lib/codemirror-5.58.3/mode/zig.js" defer></script>
+    <script src="../version.js"></script>
+    <script src="../index.js" defer></script>
+  </head>
+
+  <body id="slide_container" class="bg-blue-500">
+    <div class="fixed top-0 right-0 z-30" title="???">
+      <span id="version_build" class="">build=?</span>
+      <span id="version_commit" class="ml-4">commit=?</span>  
+    </div>
+
+    <div id="slide" class="bg-gray-100">
+      <!-- source page -->
+      <div id="source_page" class="m-2">
+        <div id="header" class="flex">
+          <div class="flex flex-1 ml-2">
+            <div id="example_title" class="text-lg"></div>
+          </div>
         </div>
-    </body>
+
+        <div id="tabs" class="relative flex flex-row"></div>
+        <div id="source_buttons" class="">
+          <span title="run main.zig">
+            <svg id="run_main_button" class="feather svg-button mb-2">
+              <use xlink:href="../lib/feather-4.28.0/feather-sprite.svg#play" />
+            </svg>
+          </span>
+          <span title="test selected file">
+            <svg id="test_file_button" class="feather svg-button mb-2">
+              <use xlink:href="../lib/feather-4.28.0/feather-sprite.svg#check" />
+            </svg>
+          </span>
+          <span title="format selected file">
+            <svg id="format_file_button" class="feather svg-button mb-2">
+              <use
+                xlink:href="../lib/feather-4.28.0/feather-sprite.svg#align-center"
+              />
+            </svg>
+          </span>
+        </div>
+
+        <div
+          id="source_panel"
+          class="overflow-scroll mb-4 border-l-2 border-r-2 border-b-2 border-gray-400"
+        ></div>
+      </div>
+
+      <!-- output page -->
+      <div id="output_page" class="m-2">
+        <div id="args" class="relative flex flex-row">
+          <svg
+            id="run_status_circle"
+            class="feather absolute top-1.5 left-1.5 h-4/5 stop_color"
+          >
+            <use xlink:href="../lib/feather-4.28.0/feather-sprite.svg#circle" />
+          </svg>
+          <svg
+            id="run_status_play"
+            class="feather absolute top-1.5 left-1.5 h-4/5 hidden exec_color animate-ping"
+          >
+            <use
+              xlink:href="../lib/feather-4.28.0/feather-sprite.svg#play-circle"
+            />
+          </svg>
+          <label class="ml-12">
+            <span>argv</span>
+            <input id="argv" class="px-1 text-sm" />
+          </label>
+        </div>
+
+        <div
+          id="output_panel"
+          class="overflow-scroll mb-4 mr-4 border-l-2 border-r-2 border-b-2 border-gray-400"
+        ></div>
+
+        <img
+          id="ziggy"
+          class="absolute right-2 bottom-2 w-20 max-w-sm z-10"
+          style="transform: scaleX(-1)"
+          src="../lib/zig-logo-413593a/ziggy.svg"
+        />
+      </div>
+    </div>
+  </body>
 </html>

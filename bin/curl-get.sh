@@ -2,7 +2,7 @@
 set -e
 # set -x
 
-CODE=$(cat src/hello.zig | base64 -w 0)
+CODE=$(cat $1 | base64 -w 0)
 #CODE=$(openssl base64 -in src/hello.zig | tr -d '\n')
 # echo "CODE=${CODE}"
 
