@@ -18,6 +18,7 @@ EOF
 
 /usr/sbin/crond -b -l 7 -L /var/log/cron.log
 
-
-echo "lighttpd: $(date -Iseconds)"
-/usr/sbin/lighttpd -D -f /app/lighttpd.conf
+# while true; do
+    echo "lighttpd: $(date -Iseconds)"
+    /usr/sbin/lighttpd -D -f /app/lighttpd.conf
+# done

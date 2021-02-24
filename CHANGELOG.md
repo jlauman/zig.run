@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Embed example with HTTP GET and base64 snippet encoding.
 ### Changed
+- API paths for example list and run (which hides CGI implementation).
 ### Fixed
 
 

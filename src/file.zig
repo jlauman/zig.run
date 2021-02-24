@@ -63,12 +63,12 @@ pub fn main() !void {
     }
 
     var opt_example_name: ?[]const u8 = null;
-    const opt_req_uri = env_map.get("REQUEST_URI");
-    // try stderr.print("file.cgi: optional_request_uri={}\n", .{opt_req_uri});
-    if (opt_req_uri) |request_uri| {
-        const prefix = "/bin/file.cgi?name=";
-        if (std.mem.startsWith(u8, request_uri, prefix)) {
-            var tmp = request_uri[prefix.len..];
+    const opt_query_string = env_map.get("QUERY_STRING");
+    try stderr.print("file.cgi: opt_query_string={}\n", .{opt_query_string});
+    if (opt_query_string) |query_string| {
+        const prefix = "name=";
+        if (std.mem.startsWith(u8, query_string, prefix)) {
+            var tmp = query_string[prefix.len..];
             if (std.mem.indexOf(u8, tmp, "&") == null) {
                 opt_example_name = tmp;
             } else {
