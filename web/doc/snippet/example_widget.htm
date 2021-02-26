@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- prettier-ignore -->
+<html>
+    <head>
+        <title>zig.run</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js" data-manual></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-css.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-zig.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+        <style>
+            body { margin: 0; background-color: rgb(243, 244, 246); }
+            #content { width: 100vw; height: 100vh; }
+            .zig-example { display: flex; justify-content: center; align-items: center; height: 100%; }
+            .zig-example > pre { min-width: 50vw; min-height: 50vh; }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <div class="zig-example">
+                <pre><button>RUN</button>&nbsp;<button>RESET</button>&nbsp;<button>EDIT</button><br/><br/><code class="language-zig"></code>
+                <script>
+                    let playUrl = 'http://penguin.linux.test:8080/play/base64/Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
+                    let editUrl = 'http://penguin.linux.test:8080/snippet/#Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
+                    let children = Array.from(document.currentScript.parentElement.children); 
+                    let code = children.find((e) => e.tagName == 'CODE');
+                    let button = (label) => children.find((e) => e.tagName == 'BUTTON' && e.textContent == label); 
+                    let output = (t) => new Promise((resolve) => { code.textContent = t; resolve(); });
+                    button('RUN').onclick = () => output('Running...').then(fetch(playUrl).then(r => r.json()).then(t => output(t.stdout + '\n----------\n' + t.stderr)));
+                    button('RESET').onclick = () => output(atob(editUrl.split('#')[1])).then(() => Prism && Prism.highlightElement(code));
+                    button('EDIT').onclick = () => window.open(editUrl);
+                    output(atob(editUrl.split('#')[1])).then(() => Prism && Prism.highlightElement(code));
+                </script>
+                </pre>
+            </div>            
+        </div>
+    </body>
+</html>

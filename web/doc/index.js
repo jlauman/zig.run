@@ -44,6 +44,7 @@ async function main() {
       .loadExample(document.location.hash)
       .then((command) => editor.command(command));
   }
+
   window.scrollTo(0, 0);
 }
 
@@ -251,8 +252,8 @@ class Editor {
       return;
     }
 
-    if (target.id === 'create_embed_code') {
-      this.createEmbedCode();
+    if (target.id === 'create_widget_code') {
+      this.createWidgetCode();
       return;
     }
 
@@ -260,32 +261,6 @@ class Editor {
       this.setPage(1);
       return;
     }
-
-    // if (target.id === 'previous_example_button') {
-    //   const fragment = getDocumentFragment();
-    //   let last = null;
-    //   for (let example of this.examples) {
-    //     if (fragment === example.name && last != null) {
-    //       document.location = `#${last.name}`;
-    //       break;
-    //     }
-    //     last = example;
-    //   }
-    //   return;
-    // }
-
-    // if (target.id === 'next_example_button') {
-    //   const fragment = getDocumentFragment();
-    //   let last = null;
-    //   for (let example of this.examples) {
-    //     if (last) {
-    //       document.location = `#${example.name}`;
-    //       break;
-    //     }
-    //     if (fragment === example.name) last = example;
-    //   }
-    //   return;
-    // }
 
     if (target.classList.contains('example_name')) {
       const exampleName = target.dataset.example_name;
@@ -313,10 +288,10 @@ class Editor {
       const code = atob(name.substring(1));
       const match = code.match(/^\/\/\! (.*)\n/);
       const title = Array.isArray(match) ? match[1] : 'Snippet';
+      name = '900_snippet'; // change argument value
+      this.examples = [{ title, name }];
       this._sourceFiles.push({ name: 'main.zig', code, docs: '' });
-      this.examples = [{ title, name: 'snippet' }];
       command = code.includes('\ntest ') ? 'test' : 'run';
-      name = 'snippet'; // change argument value
     } else {
       let example = this.examples.find((e) => e.name == name);
       console.log('loadExample: example=', example);
@@ -359,53 +334,47 @@ class Editor {
       el.classList.remove('svg-button');
       el.classList.add('svg-button-disabled');
     }
+    // enable snippet buttons for snippet editor and runner
+    if (name === '900_snippet' || !this._isApp) {
+      document.getElementById('create_link_button').classList.remove('hidden');
+      document.getElementById('create_widget_code').classList.remove('hidden');
+    }
     // console.log(this._sourceFiles);
     // set example title
-    if (name !== '900_snippet') {
-      this.setExampleTitle(name);
-      this.loadExampleSourceDocs();
-    }
+    this.loadExampleSourceDocs(name);
+    this.setExampleTitle(name);
     this.loadExampleTabs();
     return command;
   }
 
   setExampleTitle(name) {
-    for (let i = 0; i < this.examples.length; i++) {
-      let example = this.examples[i];
+    for (let example of this.examples) {
       if (example.name === name) {
         document.getElementById('example_title').textContent = example.title;
-        // previous example button
-        // const prev_el = document.getElementById('previous_example_title');
-        // prev_el.classList.remove('hidden');
-        // if (i > 0) {
-        //   prev_el.title = this.examples[i - 1].title;
-        // } else prev_el.classList.add('hidden');
-        // next example button
-        // const next_el = document.getElementById('next_example_title');
-        // next_el.classList.remove('hidden');
-        // if (i < this.examples.length - 1) {
-        //   next_el.title = this.examples[i + 1].title;
-        // } else next_el.classList.add('hidden');
         break;
       }
     }
   }
 
-  loadExampleSourceDocs() {
-    for (let file of this._sourceFiles) {
-      // console.log("loadExampleSourceDocs: file=", file);
-      let code = [];
-      let docs = [];
-      for (let line of file.code.split('\n')) {
-        // console.log('line=', line);
-        if (line.startsWith('//!')) {
-          docs.push(line.substring(3).trim());
-        } else {
-          code.push(line);
+  loadExampleSourceDocs(name) {
+    if (name === '900_snippet') {
+      // instruction for using buttons and snippets
+    } else {
+      for (let file of this._sourceFiles) {
+        // console.log("loadExampleSourceDocs: file=", file);
+        let code = [];
+        let docs = [];
+        for (let line of file.code.split('\n')) {
+          // console.log('line=', line);
+          if (line.startsWith('//!')) {
+            docs.push(line.substring(3).trim());
+          } else {
+            code.push(line);
+          }
         }
+        file.code = code.join('\n');
+        file.docs = docs.join('\n');
       }
-      file.code = code.join('\n');
-      file.docs = docs.join('\n');
     }
   }
 
@@ -551,31 +520,33 @@ class Editor {
     const match = code.match(/^\/\/\! (.*)\n/);
     const title = Array.isArray(match) ? match[1] : 'Snippet';
     // prettier-ignore
-    const value = `<a target="_blank" href="${location.origin}/snippet/#${btoa(code)}"><button>Run ${title}</button></a>`;
+    const value = `<a target="_blank" href="${location.origin}/snippet/#${btoa(code)}"><button>Run ${title}</button></a>\n`;
     this._outputCodeMirror.setValue(value);
   }
 
-  createEmbedCode() {
+  createWidgetCode() {
     const code = this._sourceCodeMirror.getValue();
     const match = code.match(/^\/\/\! (.*)\n/);
     const title = Array.isArray(match) ? match[1] : 'Snippet';
     // prettier-ignore
     const value = `
-      <div class="zig-snippet">
-        <pre><button>RUN</button>&nbsp;<button>RESET</button><br/><br/><code class="language-zig"></code>
-        <script>
-            let url = '${location.origin}/play/base64/${btoa(code)}';
-            let zig = atob(url.split('base64/')[1]);
-            let children = Array.from(document.currentScript.parentElement.children);
-            let code = children.find((e) => e.tagName == 'CODE'); let run = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RUN'); let reset = children.find((e) => e.tagName == 'BUTTON' && e.textContent == 'RESET');
-            let output = (t) => new Promise((resolve) => { code.textContent = t; resolve(); });
-            run.onclick = () => output('Running...').then(fetch(url).then(r => r.json()).then(t => output(t.stdout + '\\n----------\\n' + t.stderr)));
-            reset.onclick = () => output(zig).then(() => Prism && Prism.highlightElement(code));
-            output(zig).then(() => Prism && Prism.highlightElement(code));
-        </script>
-        </pre>
-      </div>
-    `;
+<div class="zig-example">
+    <pre><button>RUN</button>&nbsp;<button>RESET</button>&nbsp;<button>EDIT</button><br/><br/><code class="language-zig"></code>
+    <script>
+        let playUrl = '${location.origin}/play/base64/${btoa(code)}';
+        let editUrl = '${location.origin}/snippet/#${btoa(code)}';
+        let children = Array.from(document.currentScript.parentElement.children); 
+        let code = children.find((e) => e.tagName == 'CODE');
+        let button = (label) => children.find((e) => e.tagName == 'BUTTON' && e.textContent == label); 
+        let output = (t) => new Promise((resolve) => { code.textContent = t; resolve(); });
+        button('RUN').onclick = () => output('Running...').then(fetch(playUrl).then(r => r.json()).then(t => output(t.stdout + '\\n----------\\n' + t.stderr)));
+        button('RESET').onclick = () => output(atob(editUrl.split('#')[1])).then(() => Prism && Prism.highlightElement(code));
+        button('EDIT').onclick = () => window.open(editUrl);
+        output(atob(editUrl.split('#')[1])).then(() => Prism && Prism.highlightElement(code));
+    </script>
+    </pre>
+</div>
+    `.trim();
     this._outputCodeMirror.setValue(value);
   }
 } // end Editor
