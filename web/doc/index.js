@@ -149,7 +149,7 @@ class Editor {
       if (target.classList.contains('cm-link')) {
         const url = target.textContent;
         console.log('click: url=', url);
-        if (url.startsWith('https://zig.run')) {
+        if (url.startsWith('https://zig.run/#')) {
           const fragment = url.split('#')[1];
           document.location = `#${fragment}`;
         } else {
@@ -338,6 +338,9 @@ class Editor {
     if (name === '900_snippet' || !this._isApp) {
       document.getElementById('create_link_button').classList.remove('hidden');
       document.getElementById('create_widget_code').classList.remove('hidden');
+    } else {
+      document.getElementById('create_link_button').classList.add('hidden');
+      document.getElementById('create_widget_code').classList.add('hidden');
     }
     // console.log(this._sourceFiles);
     // set example title
@@ -358,7 +361,27 @@ class Editor {
 
   loadExampleSourceDocs(name) {
     if (name === '900_snippet') {
-      // instruction for using buttons and snippets
+      this._sourceFiles[0].docs = `
+snippet
+
+Use the external-link button (vertical button bar, second 
+from the bottom) to create an HTML fragement that can be 
+pasted into a page. The link will open a new tab with the 
+zig.run snippet runner.
+
+see: ${location.origin}/snippet/example_button.htm
+
+Use the code-bracket button (vertical button bar, bottom 
+button) to create an HTML widget that can be pasted into
+a page. The widget will run the example and replace the Zig 
+code with the output.
+
+see: ${location.origin}/snippet/example_widget.htm
+
+Use the button or widget output as-is with some CSS or as
+a starting point for using zig.run as a service with your
+own code.
+      `.trim();
     } else {
       for (let file of this._sourceFiles) {
         // console.log("loadExampleSourceDocs: file=", file);
@@ -519,8 +542,9 @@ class Editor {
     const code = this._sourceCodeMirror.getValue();
     const match = code.match(/^\/\/\! (.*)\n/);
     const title = Array.isArray(match) ? match[1] : 'Snippet';
+    const command = code.includes('\ntest ') ? 'TEST' : 'RUN';
     // prettier-ignore
-    const value = `<a target="_blank" href="${location.origin}/snippet/#${btoa(code)}"><button>Run ${title}</button></a>\n`;
+    const value = `<a target="_blank" href="${location.origin}/snippet/#${btoa(code)}"><button>${command} ${title}</button></a>\n`;
     this._outputCodeMirror.setValue(value);
   }
 
