@@ -21,8 +21,8 @@
             <div class="zig-example">
                 <pre><button>RUN</button>&nbsp;<button>RESET</button>&nbsp;<button>EDIT</button><br/><br/><code class="language-zig"></code>
                 <script>
-                    let playUrl = 'http://penguin.linux.test:8080/play/base64/Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
-                    let editUrl = 'http://penguin.linux.test:8080/snippet/#Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
+                    let playUrl = 'https://zig.run/play/base64/Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
+                    let editUrl = 'https://zig.run/snippet/#Ly8hIEhlbGxvIFdvcmxkCi8vIQpjb25zdCBzdGQgPSBAaW1wb3J0KCJzdGQiKTsKY29uc3QgcHJpbnQgPSBzdGQuZGVidWcucHJpbnQ7CgpwdWIgZm4gbWFpbigpICF2b2lkIHsKICAgIHByaW50KCJ7fVxuIiwgLnsiaGVsbG8gd29ybGQhIn0pOwp9';
                     let children = Array.from(document.currentScript.parentElement.children); 
                     let code = children.find((e) => e.tagName == 'CODE');
                     let button = (label) => children.find((e) => e.tagName == 'BUTTON' && e.textContent == label); 
