@@ -6,13 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Embed example with HTTP GET and base64 snippet encoding.
 ### Changed
-- API paths for example list and run (which hides CGI implementation).
 ### Fixed
 
 
-## [210220] - 20210220
+## [210226] 2021-02-26
+### Added
+- Embed example with HTTP GET and base64 snippet encoding.
+- Snippet runner for external Zig examples.
+- Snippet example with external button and widget generators.
+- Copy of Zigg Zagg sample with while loop continuation.
+### Changed
+- API paths for example list and run (which hides CGI implementation).
+- Comments for base64 example.
+### Fixed
+
+
+## [210220] - 2021-02-20
 ### Added
 - Example to confirm openDir on /home/web/tmp folder fails.
 - Example to confirm outbound network connection fails.
@@ -22,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 
-## [210219] - 20210219
+## [210219] - 2021-02-19
 ### Added
 - Array, struct, and enum examples.
 ### Changed
@@ -39,14 +49,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Slide checkbox label is now clickable.
 
 
-## [210201] - 20210201
+## [210201] - 2021-02-01
 ### Added
 - Code files for two more examples.
 ### Changed
 ### Fixed
 
 
-## [210130] - 20210130
+## [210130] - 2021-01-30
 ### Added
 - Tooltips to run, test, and format buttons.
 - Two examples and updated others.
