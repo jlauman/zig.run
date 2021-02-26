@@ -1,2 +1,2 @@
 # zig.run
-Run and play with Zig source code.
+[Run and play](https://zig.run) with Zig source code.
