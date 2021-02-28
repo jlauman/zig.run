@@ -164,12 +164,13 @@ class Editor {
     const div = document.getElementById('example_list');
     for (const example of this.examples) {
       // console.log("constructExamplesList: example=", example);
-      div.insertAdjacentHTML(
-        'beforeend',
-        `
-        <li class="example_name pl-2" data-example_name="${example.name}">${example.title}</li>
-        `
-      );
+      if (example.title.startsWith('## ')) {
+        // prettier-ignore
+        div.insertAdjacentHTML('beforeend', `<li class="example_header mt-2 text-lg" data-example_name="${example.name}">${example.title.substring(3)}</li>`);
+      } else {
+        // prettier-ignore
+        div.insertAdjacentHTML('beforeend', `<li class="example_name pl-2" data-example_name="${example.name}">${example.title}</li>`);
+      }
     }
   }
 

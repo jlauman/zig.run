@@ -43,7 +43,7 @@ a:hover {
   left: 50vw;
   top: 0vh;
   width: 50vw;
-  height: 100vh;
+  height: 98vh;
 }
 
 #source_page {
@@ -129,6 +129,12 @@ a:hover {
 
 :hover.tab-active {
   border-top-color: black;
+}
+
+.example_header {
+  border-left-width: 4px;
+  border-left-color: #d1d5db;
+  background-color: #d1d5db;
 }
 
 .example_name {

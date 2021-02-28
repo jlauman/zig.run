@@ -535,10 +535,6 @@ video {
   border-radius: 0.125rem;
 }
 
-.border-r-2 {
-  border-right-width: 2px;
-}
-
 .border-b-2 {
   border-bottom-width: 2px;
 }
@@ -593,6 +589,10 @@ video {
   margin: 0.5rem;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
 .mr-2 {
   margin-right: 0.5rem;
 }
@@ -635,6 +635,10 @@ video {
 
 .overflow-scroll {
   overflow: scroll;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
 }
 
 .px-1 {
@@ -717,6 +721,10 @@ video {
 
 .w-40 {
   width: 10rem;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .z-10 {
