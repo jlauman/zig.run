@@ -75,16 +75,17 @@ pub fn readTitleFromFile(allocator: *Allocator, file_opt: ?std.fs.File, example_
     var title: []u8 = undefined;
     if (file_opt) |file| {
         var buffer: [256]u8 = undefined;
-        const bytes_read = file.readAll(&buffer);
-        const string = buffer[0..];
+        const bytes_read = try file.readAll(&buffer);
+        const string = buffer[0..bytes_read];
         // std.debug.print("util: string={}\n", .{string});
-        const opt_i = std.mem.indexOf(u8, string, "\n");
-        if (std.mem.startsWith(u8, string, "//! ")) {
-            if (opt_i) |i| {
-                const tmp = string[4..i];
-                title = try allocator.alloc(u8, tmp.len);
-                std.mem.copy(u8, title, tmp);
-            }
+        if (bytes_read > 4 and std.mem.startsWith(u8, string, "//! ")) {
+            const opt_i = std.mem.indexOf(u8, string, "\n");
+            var n = string.len;
+            if (opt_i) |i| { n = i; }
+            // std.debug.print("util: string[4..{}]\n", .{n});
+            const tmp = string[4..n];
+            title = try allocator.alloc(u8, tmp.len);
+            std.mem.copy(u8, title, tmp);
         } else {
             title = try allocator.alloc(u8, example_name.len);
             std.mem.copy(u8, title, example_name);
