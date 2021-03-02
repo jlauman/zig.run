@@ -15,7 +15,7 @@
 //! * Together we serve the users.
 //!
 //!
-//! see: https://zig.run/#101_std_debug_print
+//! see: https://zig.run/#101_main
 //! see: https://zig.run/#102_import
 //! see: https://zig.run/#103_test
 //!

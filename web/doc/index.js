@@ -1,5 +1,7 @@
 window.ZigRun = window.ZigRun || {};
 
+const SNIPPET_EXAMPLE_NAME = '801_snippet';
+
 async function main() {
   // prettier-ignore
   try {
@@ -249,11 +251,13 @@ class Editor {
     }
 
     if (target.id === 'create_link_button') {
+      this.setPage(2);
       this.createLinkButton();
       return;
     }
 
     if (target.id === 'create_widget_code') {
+      this.setPage(2);
       this.createWidgetCode();
       return;
     }
@@ -289,7 +293,7 @@ class Editor {
       const code = atob(name.substring(1));
       const match = code.match(/^\/\/\! (.*)\n/);
       const title = Array.isArray(match) ? match[1] : 'Snippet';
-      name = '900_snippet'; // change argument value
+      name = SNIPPET_EXAMPLE_NAME; // change argument value
       this.examples = [{ title, name }];
       this._sourceFiles.push({ name: 'main.zig', code, docs: '' });
       command = code.includes('\ntest ') ? 'test' : 'run';
@@ -336,7 +340,7 @@ class Editor {
       el.classList.add('svg-button-disabled');
     }
     // enable snippet buttons for snippet editor and runner
-    if (name === '900_snippet' || !this._isApp) {
+    if (name === SNIPPET_EXAMPLE_NAME || !this._isApp) {
       document.getElementById('create_link_button').classList.remove('hidden');
       document.getElementById('create_widget_code').classList.remove('hidden');
     } else {
@@ -361,7 +365,7 @@ class Editor {
   }
 
   loadExampleSourceDocs(name) {
-    if (name === '900_snippet') {
+    if (name === SNIPPET_EXAMPLE_NAME) {
       this._sourceFiles[0].docs = `
 snippet
 
