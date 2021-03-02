@@ -10,7 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 
-## [210226] 2021-02-26
+## [210301] - 2021-03-01
+### Added
+- Example list headers.
+### Changed
+- Order of examples.
+- Moved credits to example list.
+### Fixed
+- Reading title of empty file or file with no newline.
+
+
+## [210226] - 2021-02-26
 ### Added
 - Embed example with HTTP GET and base64 snippet encoding.
 - Snippet runner for external Zig examples.

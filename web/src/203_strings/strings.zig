@@ -36,7 +36,7 @@ test "string endsWith" {
     expect(endsWith(u8, str, "ing"));
 }
 
-test "muliline string" {
+test "multiline string" {
     const str =
         \\line one
         \\line two
