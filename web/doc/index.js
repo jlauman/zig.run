@@ -5,8 +5,7 @@ const SNIPPET_EXAMPLE_NAME = '801_snippet';
 async function main() {
   // prettier-ignore
   try {
-    document.getElementById('version_build').textContent = `build=${ZigRun.build}`;
-    document.getElementById('version_commit').textContent = `commit=${ZigRun.commit}`;
+    document.getElementById('version_build').textContent = `build=${ZigRun.build}.${ZigRun.commit}`;
   } catch (err) {
     console.error(err);
   }

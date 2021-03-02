@@ -7,7 +7,7 @@
 //! see: https://ziglang.org/documentation/0.7.1/#toc-Hello-World
 //! see: https://ziglang.org/documentation/0.7.1/#Comments
 //! see: https://github.com/ziglang/zig/blob/0.7.1/lib/std/debug.zig#L61
-//! see: https://zig.run/#105_std_io_getstdout
+//! see: https://zig.run/#301_std_io_getstdout
 //!
 const std = @import("std");
 // const print = std.debug.print;

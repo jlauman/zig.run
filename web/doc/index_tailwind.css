@@ -535,6 +535,10 @@ video {
   border-radius: 0.125rem;
 }
 
+.border-r-2 {
+  border-right-width: 2px;
+}
+
 .border-b-2 {
   border-bottom-width: 2px;
 }
@@ -680,6 +684,10 @@ video {
 
 .left-1 {
   left: 0.25rem;
+}
+
+.top-2 {
+  top: 0.5rem;
 }
 
 .right-2 {
